@@ -1,0 +1,13 @@
+## generic files to ignore
+*~
+*.DS_Store
+*.swp
+*.out
+# java specific
+*.class
+# project specific
+*.inf
+#*.conf
+*.qs
+*.o
+*.e

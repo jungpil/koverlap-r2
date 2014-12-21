@@ -1,6 +1,7 @@
 package util;
 
 import util.MersenneTwisterFast;
+import util.Debug;
 import java.util.Properties;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -36,7 +37,8 @@ public class Globals {
 	public static Landscape landscape;
 //	public static String reportLevel = "details";
 	public static String reportLevel = "summary";
-	public static boolean debug = false;
+//	public static boolean debug = false;
+	public static boolean debugToFile = false;
 	public static boolean replicate = true; 
 //	private static long seed = 1261505528597l;
 	public static double landscapeMax;
@@ -64,6 +66,7 @@ public class Globals {
 				periods = Integer.parseInt(p.getProperty("periods"));
 				numRuns = Integer.parseInt(p.getProperty("runs"));
 				outfilename = p.getProperty("outfile");
+				debugfile = p.getProperty("debugfile");
 				influenceMatrixFile = p.getProperty("influenceMatrix");
 				numOrgs = Integer.parseInt(p.getProperty("numOrgs"));
 //				overlap = Integer.parseInt(p.getProperty("overlap"));
@@ -86,10 +89,21 @@ public class Globals {
 				}
 				// [end add]
 				reportLevel = p.getProperty("reportLevel");
-				String authorityString = p.getProperty("authority");
-				if (authorityString.equals("true") || authorityString.equals("1")) { authority = true; } else { authority = false; }
-				String debugString = p.getProperty("debug");
-				if (debugString.equals("true") || debugString.equals("1")) { debug = true; }
+				if (p.getProperty("authority").equals("true") || p.getProperty("authority").equals("1")) { 
+					authority = true; 
+				} else { 
+					authority = false; 
+				}
+
+				if (p.getProperty("debug").equals("true") || p.getProperty("debug").equals("1")) { 
+					Debug.setDebug(true, p.getProperty("debugToFile").equals("true") || p.getProperty("debugToFile").equals("1")); 
+					// debug = true; 
+					// if (p.getProperty("debugToFile").equals("true") || p.getProperty("debugToFile").equals("1")) {
+					// 	Debug.setDebugFile();
+					// }
+					Debug.println(getConfigurations());
+				}
+
 				localAssessment = p.getProperty("fitnessCalc");
 				
 			} catch (Exception e) {
@@ -109,11 +123,15 @@ public class Globals {
 			System.err.println(io.getMessage());
 			io.printStackTrace();
 		}
+		Debug.println("Globals.loadGlobals: configFile loaded");
+
 	}
 	
 	public static void createLandscape(int id) {
 		landscape  = new Landscape(id, new InfluenceMatrix(influenceMatrixFile));
 		landscapeMax = landscape.getMaxFitness();
+		Debug.println("Glboals.createLandscape: landscape created at " + id + " with maxFitness " + landscapeMax);
+
 	}
 	
 	public static void setRandomNumbers(int intRunID) {
@@ -121,8 +139,30 @@ public class Globals {
 		if (replicate) { runID = (long)intRunID;
 		} else { runID = System.currentTimeMillis(); }
 		rand = new MersenneTwisterFast(runID);
+		Debug.println("Glboals.setRandomNumbers: random number seed set to: " + runID);
 	} 
 	
+	public static String getConfigurations() {
+		String retString = "----- CONFIG -----\n";
+		retString += "N: " + N + "\n";
+	// //	public static int K = 2; // no need
+		if (periods == -1) { retString += "periods: until end\n"; } else { retString += "periods: " + periods + "\n"; }
+		retString += "influenceMatrix: " + influenceMatrixFile + "\n";
+		retString += "outfile: " + outfilename + "\n";
+		retString += "rumber of runs: " + numRuns + "\n";
+		retString += "number of organizations: " + numOrgs + "\n";
+		retString += "number of sub-organizations: " + numSubOrgs + "\n";
+		retString += "overlap (bus/IS): " + busOverlap + "/" + isOverlap + "\n";
+		retString += "outfile: " + outfilename + "\n";
+		retString += "report level: " + reportLevel + "\n";
+		retString += "debug: " + Debug.debugOn() + "\n";
+		retString += "debug out: " + Debug.output() + "\n";
+		retString += "------------------\n";
+	// 	public static int[] kdists;
+	// 	public static int numAlternatives;
+	// 	public static String localAssessment = "ac2010"; // for almirall & casadesus-masanell 2010 or "gl2000" for gavetti and levinthal
+		return retString; 
+	}
 
 	public static void main(String[] args) {
 //		long runID = 1261505528597l;

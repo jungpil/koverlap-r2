@@ -10,54 +10,57 @@ import java.util.Vector;
 import java.util.Iterator;
 import java.io.PrintWriter;
 import util.StatCalc;
+import util.Debug;
 
 public class Simulation {
 	private static Vector<Organization> organizations; //= new Vector<Organization>();
 	
 	public static void main(String args[]) {
-		String configFile = setConfigFile(args);
-		Globals.loadGlobals(configFile);
-		if (Globals.debug) { System.out.println("configFile loaded"); }
+		Globals.loadGlobals(setConfigFile(args));
+		Debug.println("configFile loaded");
 
 		for (int j = Globals.startLandscapeID; j < Globals.numRuns; j++) {
 			Globals.setRandomNumbers(j);
 			// create landscape
 			Globals.createLandscape(j);
 			//Globals.landscape.printLandscapeFitness();
-			if (Globals.debug) { System.out.println("landscape created at " + j); }
+			Debug.println("landscape created at " + j);
 			
 			organizations = new Vector<Organization>();
 			// create numOrgs organizations
 			
 			for (int i = 0; i < Globals.numOrgs; i++) {
-				if (Globals.orgType.equals("iterative")) {
-					organizations.add(new Iterative(i));
-				} else if (Globals.orgType.equals("agile")) {
-					organizations.add(new Agile(i));
-				} else if (Globals.orgType.equals("sequential")) {
-					organizations.add(new Sequential(i));
-				} else if (Globals.orgType.equals("joint")) {
-					organizations.add(new Joint(i));
-				} else {
-					System.err.println("Unknown orgType: " + Globals.orgType);
-					System.exit(0);
-				}
+				// if (Globals.orgType.equals("iterative")) {
+				// 	organizations.add(new Iterative(i));
+				// } else if (Globals.orgType.equals("agile")) {
+				// 	organizations.add(new Agile(i));
+				// } else if (Globals.orgType.equals("sequential")) {
+				// 	organizations.add(new Sequential(i));
+				// } else if (Globals.orgType.equals("joint")) {
+				// 	organizations.add(new Joint(i));
+				// } else {
+				// 	System.err.println("Unknown orgType: " + Globals.orgType);
+				// 	System.exit(0);
+				// }
+				organizations.add(new Agile(i));
 			}
-			if (Globals.debug) { System.out.println("orgs created for landscape " + j); }
-			
+			Debug.println("orgs created for landscape " + j);
+
 			if (Globals.reportLevel.equals("details")) {
 				reportDetails(Globals.out, -1);
 			} else if (Globals.reportLevel.equals("summary")) {
 				reportSummary(Globals.out, -1);
 			}
-			if (Globals.debug) { System.out.println("initialized for landscape " + j); }
+			Debug.println("initialized for landscape " + j);
+
 			// run
-			if (Globals.periods == -1) {
-				runUntilEnd();
-			} else {
-				run();
-			}
-			if (Globals.debug) { System.out.println("finished running for landscape " + j); }
+			run();
+			// if (Globals.periods == -1) {
+			// 	runUntilEnd();
+			// } else {
+			// 	run();
+			// }
+			Debug.println("finished running for landscape " + j);
 //			System.out.println("landscape:\t" + j + "\t" + Globals.landscape.getMaxFitness());
 //			Globals.landscape.printLandscapeFitness();
 			Globals.landscape = null;
@@ -65,25 +68,10 @@ public class Simulation {
 	}
 	
 	private static void run() {
-		for (int t = 0; t < Globals.periods + 1; t++) {
-			if (Globals.debug) {
-				System.out.println("Simulation.run()\tperiod:\t" + t);
-			}
-			for (Organization org : organizations) {
-//				org.run(t);
-				org.run();
-			}
-			if (Globals.reportLevel.equals("details")) {
-				reportDetails(Globals.out, t);
-			} else if (Globals.reportLevel.equals("summary")) {
-				reportSummary(Globals.out, t);
-			}
-		}
-	}
-
-	private static void runUntilEnd() {
 		int t = 0; 
-		while (!allEnded()) {
+
+		// not all orgs have ended and have not reached end
+		while (!allEnded() || (Globals.period != -1 && t < Globals.period + 1)) { 
 			for (Organization org : organizations) {
 //				org.run(t);
 				org.run();
@@ -96,6 +84,38 @@ public class Simulation {
 			t++;
 		}
 	}
+
+// 	private static void run() {
+// 		for (int t = 0; t < Globals.periods + 1; t++) {
+// 			Debug.println("Simulation.run()\tperiod:\t" + t);
+
+// 			for (Organization org : organizations) {
+// //				org.run(t);
+// 				org.run();
+// 			}
+// 			if (Globals.reportLevel.equals("details")) {
+// 				reportDetails(Globals.out, t);
+// 			} else if (Globals.reportLevel.equals("summary")) {
+// 				reportSummary(Globals.out, t);
+// 			}
+// 		}
+// 	}
+
+// 	private static void runUntilEnd() {
+// 		int t = 0; 
+// 		while (!allEnded()) {
+// 			for (Organization org : organizations) {
+// //				org.run(t);
+// 				org.run();
+// 			}
+// 			if (Globals.reportLevel.equals("details")) {
+// 				reportDetails(Globals.out, t);
+// 			} else if (Globals.reportLevel.equals("summary")) {
+// 				reportSummary(Globals.out, t);
+// 			}
+// 			t++;
+// 		}
+// 	}
 	
 	private static boolean allEnded() {
 		boolean retBool = true;

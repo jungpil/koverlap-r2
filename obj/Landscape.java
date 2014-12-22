@@ -56,7 +56,7 @@ public class Landscape {
 	
 	/**
 	 * return fitness for a position as per almirall and casadesus-masanell
-	 * @param l
+	 * @param l Location within landscape
 	 * @param know boolean array of which elements the DMU has knowledge e.g., [true, true, true, true, false, true, true, false] for Business
 	 * @return fitness value 
 	 */
@@ -69,10 +69,25 @@ public class Landscape {
 				fitness += d;
 			}
 		}
-		fitness = fitness / Globals.N;
+		fitness /= Globals.N;
 		return fitness;
 	}
 	
+	/**
+	 * return fitness for a position as per almirall and casadesus-masanell
+	 * @param decisions[] is an array (of Strings) representation of the location; unknown elements are empty ("") strings
+	 */
+	public double getFitness(String[] decisions) {
+		double fitness = 0d;
+		for (int i = 0; i < decisions.length; i++) {
+			if (!decisions[i].equals("")) {
+				fitness += getFitnessContribution(decisions[i], i);
+			}
+		}
+		fitness /= Globals.N;
+		return fitness;
+	}
+
 	private void setFitnessLandscape() {
 		double maxFitness = 0d;
 		fitness = new double[(int)(Math.pow(2, Globals.N))];

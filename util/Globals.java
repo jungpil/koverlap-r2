@@ -16,24 +16,23 @@ public class Globals {
 	/**
 	 * simulation parameters: default values
 	 */
-	public static int N = 8;
 //	public static int K = 2; // no need
-	public static int periods = 100;
-//	private static String outfilename = "results/test.txt";
+	public static int numRuns = 1; // number of replications for current setting
+	public static int periods = 100; // number of runs per replication
+	public static int N = 8;
 	private static String outfilename = "results/joint_n16k0_0.txt";
 	private static String influenceMatrixFile = "conf/n16k0.txt";
-//	public static int numOrgs = 10;
-	public static int numOrgs = 100;
-//	public static int overlap = 4; // number of overlapping elements
+	public static int numOrgs = 100; // number of organizations to create within replication
 	public static int busOverlap = 0; // number of overlapping elements from IS that business knows 
 	public static int isOverlap = 0; // number of overlapping elements from Bus that IS knows
-//	public static boolean authority = true; // whether Bus can change IS or IS can change Bus
-	public static boolean authority = false; // whether Bus can change IS or IS can change Bus
-	public static String orgType = "joint"; // sequential | iterative | agile | joint
+	public static String orgType = "agile"; // sequential | iterative | agile | joint
 	public static int numSubOrgs = 2;
 	public static String[] unitNames;
+	public static int[] domainDistributionsCounts;
 	// [added 3/24/12]
 	public static int[] kdists;
+//	public static boolean authority = true; // whether Bus can change IS or IS can change Bus
+	public static boolean authority = false; // whether Bus can change IS or IS can change Bus
 	public static int numAlternatives;
 	public static Landscape landscape;
 //	public static String reportLevel = "details";
@@ -43,7 +42,6 @@ public class Globals {
 	public static boolean replicate = true; 
 //	private static long seed = 1261505528597l;
 	public static double landscapeMax;
-	public static int numRuns = 1;
 	public static int startLandscapeID;
 	public static String localAssessment = "ac2010"; // for almirall & casadesus-masanell 2010 or "gl2000" for gavetti and levinthal
 	
@@ -64,7 +62,7 @@ public class Globals {
 				p.load(new FileInputStream(configFile));
 				// simulation parameters
 //				seed = Long.parseLong(p.getProperty("seed"));
-				periods = Integer.parseInt(p.getProperty("periods"));
+				periods = Integer.parseInt(p.getProperty("periods")); // number of runs 
 				numRuns = Integer.parseInt(p.getProperty("runs"));
 				outfilename = p.getProperty("outfile");
 				debugfile = p.getProperty("debugfile");
@@ -77,10 +75,17 @@ public class Globals {
 				orgType = p.getProperty("orgType");
 				numSubOrgs = Integer.parseInt(p.getProperty("numSubOrgs"));
 				// [added 3/24/12]
+
+				// e.g,. domainDistribution=4,8,4 for aaaabbbbbbbbcccc or 10,6 for aaaaaaaaaa,bbbbbb
+				domainDistributionsCounts = new int[p.getProperty("domainDistribution").split(",").length];
+				for (int i =0; i < p.getProperty("domainDistribution").split(",").length; i++) {
+					domainDistributionCounts[i] = Integer.parseInt(p.getProperty("domainDistribution").split(",")[i]);
+				}
+
 				String[] kdistributions = p.getProperty("kdistribution").split(",");
 				kdists = new int[kdistributions.length];
 				for (int i = 0; i < kdistributions.length; i++) {
-					kdists[i] = Integer.parseInt(kdistributions[i]);
+					kdists[i] = Integer.parseInt(kdistributions[i]); 
 				}
 				unitNames = p.getProperty("unitNames").split(",");
 
@@ -172,4 +177,11 @@ public class Globals {
 		long runID = Long.parseLong(args[0]);
 		System.out.println(runID);
 	}
+
+	/** Accessors **/
+	public static int getN() {
+		return N;
+	}
+
+
 }

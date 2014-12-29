@@ -22,21 +22,18 @@ public class Organization {
 		// orgType = "whatever"; set by subclass
 		location = new Location(); // random location to start with
 		// [changed 3/24/12]
-//		units[0] = new Business(location);
+
 		units[0] = new Business(location, Globals.kdists[0]);
-		// [end change]
-		Debug.println("Business DMU " + idx + " created");
-		// if (Globals.debug) { System.out.println("Business DMU " + idx + " created"); }
 		searchStatus[0] = -2;   // DO I NEED THIS?
-//		units[1] = new InfoSys(location);
+		Debug.println("Business DMU " + idx + " created");
 		units[1] = new InfoSys(location, Globals.kdists[1]);
-		Debug.println("InfoSys DMU " + idx + " created");
-		// if (Globals.debug) { System.out.println("InfoSys DMU " + idx + " created"); }
 		searchStatus[1] = -2;   // DO I NEED THIS?
+		Debug.println("InfoSys DMU " + idx + " created");
 		
 		// no need to make specific for Business/InfoSys -- make general
 		for (int i = 0; i < Globals.numSubOrgs; i++) {
-			units[i] = new DMU(i, Globals.unitNames[i], location, Globals.kdists[i]);
+			//units[i] = new DMU(i, Globals.unitNames[i], location, Globals.kdists[i], Globals.localKnowledgeIndex[i], Globals.knowledgeOverlapIndex[i]);
+			units[i] = new Unit(i, Globals.unitNames[i], Globals.domainDistributionCounts, Globals.localKnowledgeIndices, Globals.knowledgeOverlapIndex[i]);
 		}
 		/* period = 0; */
 		completed = false;

@@ -29,6 +29,10 @@ public class DMU {
 //		localFitness = getFitness(location, "local");
 	}
 
+	public DMU(int idx, String DMUName, Location loc, int localKnowledgeSize, String[] localKnowledgeIdx, String[] knowledgeOverlapIdx) {
+		DMUType = DMUName;
+		
+	}
 
 	public DMU(int idx, String DMUName, Location loc, int localKnowledgeSize) {
 		DMUType = DMUName;

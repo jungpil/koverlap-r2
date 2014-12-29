@@ -25,13 +25,19 @@ public class Organization {
 //		units[0] = new Business(location);
 		units[0] = new Business(location, Globals.kdists[0]);
 		// [end change]
-		if (Globals.debug) { System.out.println("Business DMU " + idx + " created"); }
+		Debug.println("Business DMU " + idx + " created");
+		// if (Globals.debug) { System.out.println("Business DMU " + idx + " created"); }
 		searchStatus[0] = -2;   // DO I NEED THIS?
 //		units[1] = new InfoSys(location);
 		units[1] = new InfoSys(location, Globals.kdists[1]);
-		if (Globals.debug) { System.out.println("InfoSys DMU " + idx + " created"); }
+		Debug.println("InfoSys DMU " + idx + " created");
+		// if (Globals.debug) { System.out.println("InfoSys DMU " + idx + " created"); }
 		searchStatus[1] = -2;   // DO I NEED THIS?
 		
+		// no need to make specific for Business/InfoSys -- make general
+		for (int i = 0; i < Globals.numSubOrgs; i++) {
+			units[i] = new DMU(i, Globals.unitNames[i], location, Globals.kdists[i]);
+		}
 		/* period = 0; */
 		completed = false;
 		lastDMU = -2;

@@ -76,6 +76,8 @@ public class Landscape {
 	/**
 	 * return fitness for a position as per almirall and casadesus-masanell
 	 * @param decisions[] is an array (of Strings) representation of the location; unknown elements are empty ("") strings
+     *        for example, decision[] may look like [0, 1, 1, 0, , , , ] which is the same as Location = [0, 1, 1, 0, 1, 1, 0, 1]
+     *        and know = [t, t, t, t, f, f, f, f] for getFitness(Location l, boolean[] know)
 	 */
 	public double getFitness(String[] decisions) {
 		double fitness = 0d;

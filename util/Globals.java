@@ -31,6 +31,7 @@ public class Globals {
 	public static boolean authority = false; // whether Bus can change IS or IS can change Bus
 	public static String orgType = "joint"; // sequential | iterative | agile | joint
 	public static int numSubOrgs = 2;
+	public static String[] unitNames;
 	// [added 3/24/12]
 	public static int[] kdists;
 	public static int numAlternatives;
@@ -81,6 +82,8 @@ public class Globals {
 				for (int i = 0; i < kdistributions.length; i++) {
 					kdists[i] = Integer.parseInt(kdistributions[i]);
 				}
+				unitNames = p.getProperty("unitNames").split(",");
+
 				String startLandscapeIDStr = p.getProperty("startLandscapeID");
 				if (startLandscapeIDStr == null) {
 					startLandscapeID = 0;

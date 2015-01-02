@@ -63,16 +63,20 @@ public class Unit {
 		// 	localKnowledgeIndices[i] = StrLocalKnowledgeIndices[i];
 		// }
 
+		boolean[] tmpOthersKnowledge = new boolean[Globals.N];
 		for (int i = 0; i < localKnowledgeIdxs.split(";").length; i++) {
-			boolean[] tmpOthersKnowledge = new boolean[Globals.N];
 			if (index == i) {
-				for (int j = 0; localKnowledgeIdxs.split(";")[i].split(",").length; j++) {
+				for (int j = 0; j < localKnowledgeIdxs.split(";")[i].split(",").length; j++) {
 					if (localKnowledgeIdxs.split(";")[i].split(",")[j].equals("1")) {
 						knowledge[j] = true;
 					}
 				}
-			} else {
-				for (int j = 0; localKnowledgeIdxs.split(";")[i].split(",").length; j++) {
+			}
+		}
+
+		for (int i = 0; i < localKnowledgeIdxs.split(";").length; i++) {
+			if (index != i) {
+				for (int j = 0; j < localKnowledgeIdxs.split(";")[i].split(",").length; j++) {
 					if (localKnowledgeIdxs.split(";")[i].split(",")[j].equals("1")) {
 						if (!knowledge[j]) {
 							tmpOthersKnowledge[j] = true;

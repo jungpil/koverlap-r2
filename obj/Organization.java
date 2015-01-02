@@ -9,8 +9,9 @@ public class Organization {
 	protected int index; 
 	protected String orgType;
 	protected Location location; 
-	protected DMU[] units = new DMU[Globals.numSubOrgs];  // initialize number of DMUs to Globals.numSubOrgs
-	protected int[] searchStatus = new int[Globals.numSubOrgs]; // -2 for not started; -1 for local optimum; 0 for failed search; 1 for moved
+	protected Unit[] units = new Unit[Globals.numUnits];  // initialize number of DMUs to Globals.numSubOrgs
+
+	protected int[] searchStatus = new int[Globals.numUnits]; // -2 for not started; -1 for local optimum; 0 for failed search; 1 for moved
 	protected boolean completed;
 	protected int lastDMU;
 	protected int next = -1; // focal DMU (whose turn is it to search)?
@@ -33,11 +34,11 @@ public class Organization {
 		// no need to make specific for Business/InfoSys -- make general
 		for (int i = 0; i < Globals.numSubOrgs; i++) {
 			//units[i] = new DMU(i, Globals.unitNames[i], location, Globals.kdists[i], Globals.localKnowledgeIndex[i], Globals.knowledgeOverlapIndex[i]);
-			units[i] = new Unit(i, Globals.unitNames[i], Globals.domainDistributionCounts, Globals.localKnowledgeIndices, Globals.knowledgeOverlapIndex[i]);
+			units[i] = new Unit(i, Globals.unitNames[i], Globals.domainDistributionCounts, Globals.localKnowledgeIndices);
 		}
 		/* period = 0; */
 		completed = false;
-		lastDMU = -2;
+		//lastDMU = -2;
 	}
 	
 	public boolean finished() {

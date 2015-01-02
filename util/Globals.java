@@ -26,7 +26,7 @@ public class Globals {
 	public static int busOverlap = 0; // number of overlapping elements from IS that business knows 
 	public static int isOverlap = 0; // number of overlapping elements from Bus that IS knows
 	public static String orgType = "agile"; // sequential | iterative | agile | joint
-	public static int numSubOrgs = 2;
+	public static int numUnits = 2;
 	public static String[] unitNames;
 	public static int[] domainDistributionsCounts;
 	// [added 3/24/12]
@@ -73,10 +73,12 @@ public class Globals {
 				isOverlap = Integer.parseInt(p.getProperty("isOverlap"));
 				N = Integer.parseInt(p.getProperty("N"));
 				orgType = p.getProperty("orgType");
-				numSubOrgs = Integer.parseInt(p.getProperty("numSubOrgs"));
+				numUnits = Integer.parseInt(p.getProperty("numUnits"));
+				unitNames = p.getProperty("unitNames").split(","); // array
+
 				// [added 3/24/12]
 
-				// e.g,. domainDistribution=4,8,4 for aaaabbbbbbbbcccc or 10,6 for aaaaaaaaaa,bbbbbb
+				// e.g,. domainDistribution=4,8,4 for aaaabbbbbbbbcccc or 10,6 for aaaaaaaaaabbbbbb
 				domainDistributionsCounts = new int[p.getProperty("domainDistribution").split(",").length];
 				for (int i =0; i < p.getProperty("domainDistribution").split(",").length; i++) {
 					domainDistributionCounts[i] = Integer.parseInt(p.getProperty("domainDistribution").split(",")[i]);
@@ -87,7 +89,6 @@ public class Globals {
 				for (int i = 0; i < kdistributions.length; i++) {
 					kdists[i] = Integer.parseInt(kdistributions[i]); 
 				}
-				unitNames = p.getProperty("unitNames").split(",");
 
 				String startLandscapeIDStr = p.getProperty("startLandscapeID");
 				if (startLandscapeIDStr == null) {

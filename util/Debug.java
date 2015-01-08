@@ -8,7 +8,7 @@ public class Debug {
 	// debugging set to FALSE by default unless otherwise turned on in Globals
 	// if configFile specifies debugToFfile (boolean: true/1), then a printwriter is created
 	private static boolean debug = false;
-	private static PrintWriter out;
+	private static PrintWriter debugPrintWriter;
 	private static boolean fileout = false;
 	private static String outfilename = "STDOUT"; 
 	
@@ -20,9 +20,9 @@ public class Debug {
 		try {
 			if (debugToFile) {
 				outfilename = "debug/debug-" + System.currentTimeMillis().toString() + ".txt";
-				out = new PrintWriter(new FileOutputStream(outfilename, true), true);
+				debugPrintWriter = new PrintWriter(new FileOutputStream(outfilename, true), true);
 			} else {
-				out = new PrintWriter(System.out);
+				debugPrintWriter = new PrintWriter(System.err);
 			}
 		} catch (IOException io) {
 			System.err.println(io.getMessage());
@@ -31,11 +31,11 @@ public class Debug {
 	}
 	
 	public static void print(String s) {
-		if (debug) out.print(s);
+		if (debug) debugPrintWriter.print(s);
 	}
 	
 	public static void println(String s) {
-		if (debug) out.println(s);
+		if (debug) debugPrintWriter.println(s);
 	}
 
 	public static String isDebugOn() {

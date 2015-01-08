@@ -16,32 +16,25 @@ public class Globals {
 	/**
 	 * simulation parameters: default values
 	 */
-//	public static int K = 2; // no need
 	public static int numRuns = 1; // number of replications for current setting
 	public static int periods = 100; // number of runs per replication
 	public static int N = 8;
 	private static String outfilename; //= ""; // "results/joint_n16k0_0.txt"
 	private static String influenceMatrixFile = "conf/n16k0.txt";
-	public static int numOrgs = 100; // number of organizations to create within replication
-	public static int busOverlap = 0; // number of overlapping elements from IS that business knows 
+	// public static int numOrgs = 100; // number of organizations to create within replication
+	// public static int busOverlap = 0; // number of overlapping elements from IS that business knows 
 	public static int isOverlap = 0; // number of overlapping elements from Bus that IS knows
 	public static String orgType = "agile"; // sequential | iterative | agile | joint
 	public static int numUnits = 2;
 	public static String[] unitNames;
 	public static int[] domainDistributionsCounts;
-	// [added 3/24/12]
-	public static int[] kdists;
-//	public static boolean authority = true; // whether Bus can change IS or IS can change Bus
-	public static boolean authority = false; // whether Bus can change IS or IS can change Bus
-	public static int numAlternatives;
+	// public static int[] kdists;
+	public static boolean authority = false; // whether Bus can change IS or IS can change Bus; no need for now
+	public static int numAlternatives; // processing power; no need for now; 
 	public static Landscape landscape;
-//	public static String reportLevel = "details";
-	public static String reportLevel = "summary";
-//	public static boolean debug = false;
+	public static String reportLevel = "summary"; // reportLevel = {summary, details}
 	public static boolean debugToFile = false;
-	public static boolean replicate = true; 
-//	private static long seed = 1261505528597l;
-	public static double landscapeMax;
+	public static boolean replicate = true; // if replicate true; then runID is sequential; otherwise SystemMillis
 	public static int startLandscapeID;
 	public static String localAssessment = "ac2010"; // for almirall & casadesus-masanell 2010 or "gl2000" for gavetti and levinthal
 	
@@ -89,11 +82,11 @@ public class Globals {
 					domainDistributionCounts[i] = Integer.parseInt(p.getProperty("domainDistribution").split(",")[i]);
 				}
 
-				String[] kdistributions = p.getProperty("kdistribution").split(",");
-				kdists = new int[kdistributions.length];
-				for (int i = 0; i < kdistributions.length; i++) {
-					kdists[i] = Integer.parseInt(kdistributions[i]); 
-				}
+				// String[] kdistributions = p.getProperty("kdistribution").split(",");
+				// kdists = new int[kdistributions.length];
+				// for (int i = 0; i < kdistributions.length; i++) {
+				// 	kdists[i] = Integer.parseInt(kdistributions[i]); 
+				// }
 
 				String startLandscapeIDStr = p.getProperty("startLandscapeID");
 				if (startLandscapeIDStr == null) {
@@ -128,7 +121,9 @@ public class Globals {
 			// calculate derived values if any
 //			numAlternatives = (int)(N / numSubOrgs);
 
-		}  // end if confFile
+		}  else { // end if confFile
+			setDefaults();
+		}
 		
 		try {
 			// create output printwriter
@@ -141,10 +136,30 @@ public class Globals {
 
 	}
 	
+	private static void setDefaults() {
+		numRuns = 1; // number of replications for current setting
+		periods = 100; // number of runs per replication
+		N = 16;
+		outfilename = "results/default_testing.txt"; 
+		influenceMatrixFile = "conf/n16k7.txt";
+		numOrgs = 1; // number of organizations to create within replication
+		busOverlap = 0; // number of overlapping elements from IS that business knows 
+		isOverlap = 0; // number of overlapping elements from Bus that IS knows
+		orgType = "agile"; // sequential | iterative | agile | joint
+		numUnits = 2;
+		unitNames[0] = "business"; unitNames[1] = "IS";
+		domainDistributionsCounts[0] = 8; domainDistributionsCounts[1] = 8;
+		authority = false; // whether Bus can change IS or IS can change Bus; no need for now
+		numAlternatives = 1; // processing power; no need for now; 
+		reportLevel = "summary"; // reportLevel = {summary, details}
+		debugToFile = true;
+		replicate = true; // if replicate true; then runID is sequential; otherwise SystemMillis
+		localAssessment = "ac2010"; // for almirall & casadesus-masanell 2010 or "gl2000" for gavetti and levinthal
+	}
+
 	public static void createLandscape(int id) {
 		landscape  = new Landscape(id, new InfluenceMatrix(influenceMatrixFile));
-		landscapeMax = landscape.getMaxFitness();
-		Debug.println("Glboals.createLandscape: landscape created at " + id + " with maxFitness " + landscapeMax);
+		Debug.println("Glboals.createLandscape: landscape created at " + id + " with maxFitness " + landscape.getMaxFitness());
 
 	}
 	

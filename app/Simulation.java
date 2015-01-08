@@ -12,9 +12,21 @@ import java.io.PrintWriter;
 import util.StatCalc;
 import util.Debug;
 
+/** 
+ * Main application class
+ * 
+ * @param configfile
+ * - load config file
+ * - loop iterations
+ *   - create new landscape
+ *   - create new organizations; report initial setup
+ *   - loop organizations
+ *     - run; report
+ */
 public class Simulation {
 	private static Vector<Organization> organizations; //= new Vector<Organization>();
 	
+	/** MAIN APP METHOD */
 	public static void main(String args[]) {
 		// set simulation configuration
 		Globals.loadGlobals(setConfigFile(args));
@@ -41,40 +53,19 @@ public class Simulation {
 			}
 			Debug.println("Organizations (" + Globals.orgType + ") created for landscape " + j);
 
-			/** */
-			if (Globals.reportLevel.equals("details")) {
-				reportDetails(Globals.out, -1);
-			} else if (Globals.reportLevel.equals("summary")) {
-				reportSummary(Globals.out, -1);
-			}
+			/** initial setup -- t = -1 */
+			report(-1);
 
 			/** Run one iteration = 1 landscape X NumOrgs organizations */
-			run(Globals.periods);
+			runIteration(Globals.periods);
 
 			Debug.println("Finished iteration for landscape (" + j + ")");
 			Globals.landscape = null; // just for good measure; destruct landscape object
 		}
 	}
-	
-// 	private static void run() {
-// 		int t = 0; 
 
-// 		// not all orgs have ended and have not reached end
-// 		while (!allEnded() || (Globals.period != -1 && t < Globals.period + 1)) { 
-// 			for (Organization org : organizations) {
-// //				org.run(t);
-// 				org.run();
-// 			}
-// 			if (Globals.reportLevel.equals("details")) {
-// 				reportDetails(Globals.out, t);
-// 			} else if (Globals.reportLevel.equals("summary")) {
-// 				reportSummary(Globals.out, t);
-// 			}
-// 			t++;
-// 		}
-// 	}
-
-	private static void run(int periods) {
+	/** run simulations for one iteration (replication) */
+	private static void runIteration(int periods) {
 		// if periods = -1 then run until equilibrium else run (period) number of time ticks
 		for (int t = 0; t < periods + 1; t++) {
 			Debug.println("Simulation.run()\tperiod:\t" + t);
@@ -82,28 +73,17 @@ public class Simulation {
 			for (Organization org : organizations) {
 				org.run();
 			}
-
-			if (Globals.reportLevel.equals("details")) {
-				reportDetails(Globals.out, t);
-			} else if (Globals.reportLevel.equals("summary")) {
-				reportSummary(Globals.out, t);
-			}
-
+			
+			report(t);
 			if (allEnded()) break;
 		}
 	}
 	
-	private static boolean allEnded() {
-		boolean retBool = true;
-		for (Organization org : organizations) {
-			if (!org.finished()) {
-				retBool = false; 
-				break;
-			}
-		}
-		return retBool;
-	}
-	
+	/** check arguments 
+	 * - if more than 1 arg; INVALID; QUIT
+	 * - if 1 arg: arg = configfile
+	 * - if 0 arg; use defaults in Globals class
+	 */
 	private static String setConfigFile(String[] args) {
 		String retString = "";
 		if (args.length > 1) {
@@ -119,6 +99,11 @@ public class Simulation {
 	}
 	
 	/** Reporting methods*/
+	private static void report(int period) {
+		if (Globals.reportLevel.equals("details")) reportDetails(period);
+		if (Globals.reportLevel.equals("summary")) reportSummary(period);
+	}
+
 	private static void reportDetails(int period) {
 		for (Organization org : organizations) {
 			org.printDetails(period);
@@ -137,4 +122,16 @@ public class Simulation {
 		Globals.out.println(Globals.landscape.getLandscapeID() + "\t" + period + "\t" + completed + "\t" + stat.getMean() + "\t" + stat.getStandardDeviation() + "\t" + stat.getMin() + "\t" + stat.getMax());
 	}
 
+	/** checks if all agents are done; for early break */
+	private static boolean allEnded() {
+		boolean retBool = true;
+		for (Organization org : organizations) {
+			if (!org.finished()) {
+				retBool = false; 
+				break;
+			}
+		}
+		return retBool;
+	}
+	
 }

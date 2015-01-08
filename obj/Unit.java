@@ -135,5 +135,31 @@ public class Unit {
 		}
 		return retSize;
 	}
+
+	private void setNeighbors() {
+		for (int i = 0; i < Globals.N; i++) {
+			String[] neighborLocString = new String[Globals.N];
+			boolean add = false;
+			for (int j = 0; j < Globals.N; j++) {
+				if (i == j) {
+					if (localLoc.getLocationAt(j).equals("1")) {
+						neighborLocString[j] = "0"; add = true;
+					} else if (localLoc.getLocationAt(j).equals("0")) {
+						neighborLocString[j] = "1"; add = true;
+					} // else locationAt is blank so do nothing
+				} else { // all other i != j
+					neighborLocString[j] = localLoc.getLocationAt(j);
+				}
+			}
+			if (add) { neighbors.add(new Location(neighborLocString)); }
+		}
+		//Collections.shuffle(neighbors);  // shuffle so that order of retrieval is randomized
+		
+		if (Globals.debug) { System.out.println("Neighbors for " + DMUType); printNeighbors(); }
+	}
+
+	private void setNeighbors(int distance) {
+		
+	}
 	
 }

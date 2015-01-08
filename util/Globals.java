@@ -20,7 +20,7 @@ public class Globals {
 	public static int numRuns = 1; // number of replications for current setting
 	public static int periods = 100; // number of runs per replication
 	public static int N = 8;
-	private static String outfilename = "results/joint_n16k0_0.txt";
+	private static String outfilename; //= ""; // "results/joint_n16k0_0.txt"
 	private static String influenceMatrixFile = "conf/n16k0.txt";
 	public static int numOrgs = 100; // number of organizations to create within replication
 	public static int busOverlap = 0; // number of overlapping elements from IS that business knows 
@@ -65,6 +65,11 @@ public class Globals {
 				periods = Integer.parseInt(p.getProperty("periods")); // number of runs 
 				numRuns = Integer.parseInt(p.getProperty("runs"));
 				outfilename = p.getProperty("outfile");
+				if (outfilename == null) {
+					out = new PrintWriter(System.out);
+				} else {
+					out = new PrintWriter(new FileOutputStream(outfilename, true), true);
+				}
 				debugfile = p.getProperty("debugfile");
 				influenceMatrixFile = p.getProperty("influenceMatrix");
 				numOrgs = Integer.parseInt(p.getProperty("numOrgs"));

@@ -10,67 +10,39 @@ public class Debug {
 	private static boolean debug = false;
 	private static PrintWriter out;
 	private static boolean fileout = false;
-	private static String outfilename; 
+	private static String outfilename = "STDOUT"; 
 	
 	/**** +setDebug 
 	 * switches debugger on/off
 	 */
-	public static void setDebug(boolean debugOn, boolean debugTofile) {
+	public static void setDebug(boolean debugOn, boolean debugToFile) {
 		debug = debugOn;
-		if (debugToFile) {
-			Debug.setDebugFile();
-		}
-	}
-	
-
-	/**** -setDebugFile
-	 * creates file printwriter for debuggering file
-	 */
-	private static void setDebugFile() {
-		outfilename = "debug-" + System.currentTimeMillis().toString() + ".txt";
 		try {
-			// create debug printwriter
-			out = new PrintWriter(new FileOutputStream(outfilename, true), true);
+			if (debugToFile) {
+				outfilename = "debug/debug-" + System.currentTimeMillis().toString() + ".txt";
+				out = new PrintWriter(new FileOutputStream(outfilename, true), true);
+			} else {
+				out = new PrintWriter(System.out);
+			}
 		} catch (IOException io) {
 			System.err.println(io.getMessage());
 			io.printStackTrace();
 		}
-		fileout = true;
 	}
-
+	
 	public static void print(String s) {
-		if (debug) { 
-			if (fileout) {
-				out.print(s);
-			} else {
-				System.out.print(s); 
-			}
-		}
+		if (debug) out.print(s);
 	}
 	
 	public static void println(String s) {
-		if (debug) { 
-			if (fileout) {
-				out.println(s);
-			} else {
-				System.out.println(s); 
-			}
-		}
+		if (debug) out.println(s);
 	}
 
-	public static String debugOn() {
-		if (debug) {
-			return "true";
-		} else {
-			return "false";
-		}
+	public static String isDebugOn() {
+		return debug;
 	}
 
-	public static String output() {
-		if (fileout) {
-			return outfilename;
-		} else {
-			return "STDOUT";
-		}
+	public static String getOutFile() {
+		return outfilename;
 	}
 }

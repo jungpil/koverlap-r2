@@ -24,12 +24,14 @@ public class Organization {
 		location = new Location(); // random location to start with
 		// [changed 3/24/12]
 
+		/**
 		units[0] = new Business(location, Globals.kdists[0]);
 		searchStatus[0] = -2;   // DO I NEED THIS?
 		Debug.println("Business DMU " + idx + " created");
 		units[1] = new InfoSys(location, Globals.kdists[1]);
 		searchStatus[1] = -2;   // DO I NEED THIS?
 		Debug.println("InfoSys DMU " + idx + " created");
+		*/
 		
 		// no need to make specific for Business/InfoSys -- make general
 		for (int i = 0; i < Globals.numSubOrgs; i++) {
@@ -81,54 +83,20 @@ public class Organization {
 		}
 		
 		if (!completed) {
-			System.out.println(period + "\t" + index + "\t" + searchStatusString + next + "\t" + location.toString() + "\t" + localFitnessString + globalFitness);
+			Globals.out.println(period + "\t" + index + "\t" + searchStatusString + next + "\t" + location.toString() + "\t" + localFitnessString + globalFitness);
 		} else {
 			if (!lastPrinted) {
-				System.out.println(period + "\t" + index + "\t" + searchStatusString + next + "\t" + location.toString() + "\t" + localFitnessString + globalFitness);
+				Globals.out.println(period + "\t" + index + "\t" + searchStatusString + next + "\t" + location.toString() + "\t" + localFitnessString + globalFitness);
 				lastPrinted = true;
 			}
 		}
 	}
 	
-	public void printDetails(PrintWriter pw, int period) {
-		double globalFitness = Globals.landscape.getFitness(location);
-		double[] localFitness = new double[Globals.numSubOrgs];
-		for (int i = 0; i < Globals.numSubOrgs; i++) {
-			localFitness[i] = units[i].getFitness();
-		}
-		String searchStatusString = "";
-		String localFitnessString = "";
-		for (int i = 0; i < Globals.numSubOrgs; i++) {
-			searchStatusString += searchStatus[i] + "\t";
-			localFitnessString += localFitness[i] + "\t";
-		}
-		
-		if (!completed) {
-			pw.println(Globals.landscape.getLandscapeID() + "\t" + period + "\t" + index + "\t" + searchStatusString + next + "\t" + location.toString() + "\t" + localFitnessString + globalFitness);
-		} else {
-			if (!lastPrinted) {
-				pw.println(Globals.landscape.getLandscapeID() + "\t" + period + "\t" + index + "\t" + searchStatusString + next + "\t" + location.toString() + "\t" + localFitnessString + globalFitness);
-				lastPrinted = true;
-			}
-		}
-	}
-	
-	public static void main(String args[]) {
-		Globals.createLandscape(0);
-//		Location l = new Location();
-//		System.out.println("initial location: " + l.toString());
-		Organization o = new Organization(0);
-		o.printLocation();
-		o.printDMUNeighbors(0);
-		o.printDMUNeighbors(1);
-		
-	}
-	
-	public DMU getDMU(int i) {
+	public Unit getUnit(int i) {
 		return units[i];
 	}
 	
-	public void printDMUNeighbors(int i) {
+	public void printUnitNeighbors(int i) {
 		System.out.println("unit: " + i);
 		units[i].printAllNeighbors();
 	}
@@ -141,4 +109,17 @@ public class Organization {
 		String toString = orgType + "\t" + location.toString() + "\t" + Globals.landscape.getFitness(location);
 		return toString;
 	}
+
+	/** main method for unit testing */
+	public static void main(String args[]) {
+		Globals.createLandscape(0);
+//		Location l = new Location();
+//		System.out.println("initial location: " + l.toString());
+		Organization o = new Organization(0);
+		o.printLocation();
+		o.printDMUNeighbors(0);
+		o.printDMUNeighbors(1);
+		
+	}
+	
 }

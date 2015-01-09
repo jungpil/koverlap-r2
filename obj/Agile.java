@@ -2,14 +2,29 @@ package obj;
 
 import util.Globals;
 
+/**
+ * Agile organization
+ * - iterative / incremental decision making
+ *   - determine current Unit to do search
+ *   - have unit submit recommendation
+ *   
+ */
 public class Agile extends Organization {
 	
 	public Agile(int id) {
 		super(id);					// constructor of super class (sets location)
 		orgType = "agile";		// set orgType (parent)
+
+		// is there anything structural to set specifically for agile?, if so, do here.
 	}
 	
-	public void run() {
+
+
+
+
+
+
+	public void run_old() {
 		if (!completed) {
 			next = next(lastDMU);
 			
@@ -62,7 +77,7 @@ public class Agile extends Organization {
 		}
 	}
 
-	private int next(int last) { 
+	private int next_old(int last) { 
 		int nextIdx = -1;
 		int other = Math.abs(last - 1);
 

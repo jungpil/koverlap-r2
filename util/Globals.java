@@ -18,6 +18,7 @@ public class Globals {
 	 */
 	public static int numRuns = 1; // number of replications for current setting
 	public static int periods = 100; // number of runs per replication
+	public static Landscape landscape;
 	public static int N = 8;
 	private static String outfilename; //= ""; // "results/joint_n16k0_0.txt"
 	private static String influenceMatrixFile = "conf/n16k0.txt";
@@ -31,13 +32,14 @@ public class Globals {
 	// public static int[] kdists;
 	public static boolean authority = false; // whether Bus can change IS or IS can change Bus; no need for now
 	public static int numAlternatives; // processing power; no need for now; 
-	public static Landscape landscape;
+	public static double preferentialWeightage; 
+
 	public static String reportLevel = "summary"; // reportLevel = {summary, details}
 	public static boolean debugToFile = false;
 	public static boolean replicate = true; // if replicate true; then runID is sequential; otherwise SystemMillis
 	public static int startLandscapeID;
 	public static String localAssessment = "ac2010"; // for almirall & casadesus-masanell 2010 or "gl2000" for gavetti and levinthal
-	
+
 	/**
 	 * utils
 	 */

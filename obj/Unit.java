@@ -111,29 +111,23 @@ public class Unit {
 
 	// get own knowledge size -- how many elements the unit knows within own domain
 	public int getOwnKnowledgeSize() {
-		int retSize = 0; 
-		for (int i = 0; i < ownKnowledge.length; i++) {
-			if (ownKnowledge[i]) { retSize++; }
-		}
-		return retSize;
+		int count = 0;
+		for (boolean boolValue : ownKnowledge) if (boolValue) count++;
+		return count;
 	}
 
 	// get overlapping knowledge size -- how many elements the unit knows outside own domain
 	public int getOverlappingKnowedgeSize() {
-		int retSize = 0; 
-		for (int i = 0; i < othersKnowledge.length; i++) {
-			if (othersKnowledge[i]) { retSize++; }
-		}
-		return retSize;
+		int count = 0;
+		for (boolean boolValue : othersKnowledge) if (boolValue) count++;
+		return count;
 	}
 
 	// get full knowledge size -- how many elements the unit knows altogether
 	public int getFullKnowledgeSize() {
-		int retSize = 0; 
-		for (int i = 0; i < fullKnowledge.length; i++) {
-			if (fullKnowledge[i]) { retSize++; }
-		}
-		return retSize;
+		int count = 0;
+		for (boolean boolValue : fullKnowledge) if (boolValue) count++;
+		return count;
 	}
 
 	private void setNeighbors() {
@@ -155,7 +149,7 @@ public class Unit {
 		}
 		//Collections.shuffle(neighbors);  // shuffle so that order of retrieval is randomized
 		
-		if (Globals.debug) { System.out.println("Neighbors for " + DMUType); printNeighbors(); }
+		if (Globals.debug) { System.out.println("Neighbors for " + unitName); printNeighbors(); }
 	}
 
 	private void setNeighbors(int distance) {

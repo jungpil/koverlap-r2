@@ -4,6 +4,12 @@ import java.io.PrintWriter;
 
 import util.Globals;
 
+/**
+ *   - determine current Unit to do search
+ *   - have unit submit recommendation
+ *   
+ */
+
 public class Organization {
 //	private int period;  // NO NEED ANYMORE
 	protected int index; 
@@ -13,17 +19,15 @@ public class Organization {
 
 	protected int[] searchStatus = new int[Globals.numUnits]; // -2 for not started; -1 for local optimum; 0 for failed search; 1 for moved
 	protected boolean completed;
-	protected int lastDMU;
+	protected int lastSearchingUnitIdx = -1;
 	protected int next = -1; // focal DMU (whose turn is it to search)?
 	protected boolean lastPrinted = false;
 
-	
+
 	public Organization(int idx) {
 		index = idx;
 		// orgType = "whatever"; set by subclass
 		location = new Location(); // random location to start with
-		// [changed 3/24/12]
-
 		/**
 		units[0] = new Business(location, Globals.kdists[0]);
 		searchStatus[0] = -2;   // DO I NEED THIS?
@@ -47,8 +51,45 @@ public class Organization {
 		return completed;
 	}
 
-	public void run() {} // implemented by subclasses
+	public void run() {
+		// 1.  determine current unit to search
+		int focalUnitIdx = determineFocalUnitIdx();
+		// check with last unit that searched
+		//     if last unit recommended move -> current unit is other unit
+		//     if last unit recommended stay 
+		//         if still has neighbors -> current unit is the same unit
+		//         if no more neighbors -> current unit is other unit
+		//     how do we find completed? --> cumulative number of no move units = numunits
+		// have unit submit recommendation
+		// action -> move or stay
+
+	} // implemented by subclasses
 	
+	private int determineFocalUnitIdx() {
+		// check with last unit that searched
+		//     if last unit recommended move -> current unit is other unit
+		//     if last unit recommended stay 
+		//         if still has neighbors -> current unit is the same unit
+		//         if no more neighbors -> current unit is other unit
+		//     @todo how do we find completed? --> cumulative number of no move units = numunits
+
+		int idx = 0; 
+		try { // arrayIndexOutOfBounds Exception since lastSearchingUnitIdx initialized to -1
+			if (units[lastSearchingUnitIdx].getDecision().equals("move")) { // last unit moved
+				idx = (lastSearchingUnitIdx+1) % units.length; // modulus loops back to 0
+			} else { // last unit couldn't move
+				if (units[lastSearchingUnitIdx].hasNeighbors()) { // still has neighbors
+					idx = lastSearchingUnitIdx;
+				} else { // no more neighbors
+					idx = (lastSearchingUnitIdx+1) % units.length; // modulus loops back to 0
+				}
+			}
+		} catch (ArrayIndexOutOfBoundsException e) {
+			// ignore, exception caught to simplify identification of start
+		}
+		return idx;
+	}
+
 	public double getOrgFitness() {
 		return Globals.landscape.getFitness(location);
 	}

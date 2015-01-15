@@ -77,7 +77,7 @@ public class Organization {
 
 		int idx = 0; 
 		try { // arrayIndexOutOfBounds Exception since lastSearchingUnitIdx initialized to -1
-			if (units[lastSearchingUnitIdx].getDecision().equals("move")) { // last unit moved
+			if (units[lastSearchingUnitIdx].decisionIsMove()) { // last unit moved
 				idx = (lastSearchingUnitIdx+1) % units.length; // modulus loops back to 0
 			} else { // last unit couldn't move
 				if (units[lastSearchingUnitIdx].hasNeighbors()) { // still has neighbors

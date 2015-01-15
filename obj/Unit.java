@@ -28,6 +28,7 @@ public class Unit {
 	private int localKnowledgeIndex[]; 
 	private int knowledgeOverlapIndex[];
 	private Location moveTo;
+	private boolean move; // if unit's decision is to move to new location, set this to true
 
 //	private boolean move; 
 	private Vector<Location> neighbors;
@@ -128,6 +129,10 @@ public class Unit {
 		int count = 0;
 		for (boolean boolValue : fullKnowledge) if (boolValue) count++;
 		return count;
+	}
+
+	public boolean decisionIsMove() {
+		return move;
 	}
 
 	private void setNeighbors() {

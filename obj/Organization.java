@@ -29,12 +29,12 @@ public class Organization {
 		// orgType = "whatever"; set by subclass
 		location = new Location(); // random location to start with
 		/**
-		units[0] = new Business(location, Globals.kdists[0]);
-		searchStatus[0] = -2;   // DO I NEED THIS?
-		Debug.println("Business DMU " + idx + " created");
-		units[1] = new InfoSys(location, Globals.kdists[1]);
-		searchStatus[1] = -2;   // DO I NEED THIS?
-		Debug.println("InfoSys DMU " + idx + " created");
+		 * units[0] = new Business(location, Globals.kdists[0]);
+		 * searchStatus[0] = -2;    //  DO I NEED THIS?
+		 * Debug.println("Business DMU " + idx + " created");
+		 * units[1] = new InfoSys(location, Globals.kdists[1]);
+		 * searchStatus[1] = -2;    //  DO I NEED THIS?
+		 * Debug.println("InfoSys DMU " + idx + " created");
 		*/
 		
 		// no need to make specific for Business/InfoSys -- make general
@@ -63,9 +63,11 @@ public class Organization {
 		// have unit submit recommendation
 		// action -> move or stay
 
+
+
 	} // implemented by subclasses
 	
-	private int determineFocalUnitIdx() {
+	protected int determineFocalUnitIdx() {
 		// check with last unit that searched
 		//     if last unit recommended move -> current unit is other unit
 		//     if last unit recommended stay 

@@ -5,24 +5,32 @@ import util.Globals;
 /**
  * Agile organization
  * - iterative / incremental decision making
- *   - determine current Unit to do search
- *   - have unit submit recommendation
- *   
  */
 public class Agile extends Organization {
 	
 	public Agile(int id) {
-		super(id);					// constructor of super class (sets location)
+		super(id);				// constructor of super class (sets location & creates sub-units)
 		orgType = "agile";		// set orgType (parent)
 
 		// is there anything structural to set specifically for agile?, if so, do here.
 	}
 	
+	public void run() {
+		super.run(); // parent's run method first: nothing for now
 
+		// 1.  determine current unit to search
+		int focalUnitIdx = determineFocalUnitIdx();
+		// check with last unit that searched
+		//     if last unit recommended move -> current unit is other unit
+		//     if last unit recommended stay 
+		//         if still has neighbors -> current unit is the same unit
+		//         if no more neighbors -> current unit is other unit
+		//     how do we find completed? --> cumulative number of no move units = numunits
+		// have unit submit recommendation
+		// action -> move or stay
 
-
-
-
+		String decision = units[focalUnitIdx].getRecommendation();
+	}
 
 	public void run_old() {
 		if (!completed) {

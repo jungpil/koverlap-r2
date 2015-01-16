@@ -53,7 +53,7 @@ public class Organization {
 
 	public void run() {
 		// 1.  determine current unit to search
-		int focalUnitIdx = determineFocalUnitIdx();
+		//int focalUnitIdx = determineFocalUnitIdx();
 		// check with last unit that searched
 		//     if last unit recommended move -> current unit is other unit
 		//     if last unit recommended stay 

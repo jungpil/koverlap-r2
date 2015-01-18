@@ -5,6 +5,17 @@ import util.Globals;
 /**
  * Agile organization
  * - iterative / incremental decision making
+ * 
+ * Members inherited from parent (Organization)
+ *	int index; // org index
+ *	String orgType; // org type
+ *	Location location;  // location
+ *	Unit[] units;  // subunits
+ *	int[] searchStatus = new int[Globals.numUnits]; // -2 for not started; -1 for local optimum; 0 for failed search; 1 for moved
+ *	boolean completed; // organization has completed (can no longer move)
+ *	int lastSearchingUnitIdx = -1; // which unit searched last
+ *	int next = -1; // focal DMU (whose turn is it to search)?
+ *	boolean lastPrinted = false; // need?
  */
 public class Agile extends Organization {
 	
@@ -16,20 +27,19 @@ public class Agile extends Organization {
 	}
 	
 	public void run() {
-		super.run(); // parent's run method first: nothing for now
+		super.run(); // parent's run method first for any general procedures
 
-		// 1.  determine current unit to search
-		int focalUnitIdx = determineFocalUnitIdx();
-		// check with last unit that searched
-		//     if last unit recommended move -> current unit is other unit
-		//     if last unit recommended stay 
-		//         if still has neighbors -> current unit is the same unit
-		//         if no more neighbors -> current unit is other unit
-		//     how do we find completed? --> cumulative number of no move units = numunits
-		// have unit submit recommendation
-		// action -> move or stay
+		if (!completed) {
+			// 1.  determine current unit to search
+			int focalUnitIdx = determineFocalUnitIdx(); // parent method
+			//     how do we find completed? --> cumulative number of no move units = numunits
+			// have unit submit recommendation
+			// action -> move or stay
 
-		String decision = units[focalUnitIdx].getRecommendation();
+			String decision = units[focalUnitIdx].getRecommendation(location); // given the current location determine recommendation
+
+		} // if completed: do nothing
+
 	}
 
 	public void run_old() {

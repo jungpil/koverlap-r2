@@ -39,6 +39,7 @@ public class Globals {
 	public static boolean replicate = true; // if replicate true; then runID is sequential; otherwise SystemMillis
 	public static int startLandscapeID;
 	public static String localAssessment = "ac2010"; // for almirall & casadesus-masanell 2010 or "gl2000" for gavetti and levinthal
+	// @todo: check what is the difference in implementation between ac2010 and gl2000
 
 	/**
 	 * utils

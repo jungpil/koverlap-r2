@@ -87,7 +87,8 @@ public class Organization {
 				}
 			}
 		} catch (ArrayIndexOutOfBoundsException e) {
-			// ignore, exception caught to simplify identification of start
+			// ignore, exception caught to simplify identification of start since lastSearchingUnitIdx = -1 (from Class initialize)
+			// return idx = 0;
 		}
 		return idx;
 	}

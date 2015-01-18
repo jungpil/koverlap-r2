@@ -31,7 +31,10 @@ public class Unit {
 	private boolean move; // if unit's decision is to move to new location, set this to true
 
 //	private boolean move; 
-	private Vector<Location> neighbors;
+	//private Vector<Location> neighbors;
+	private Vector<Neighbor> neighbors;
+
+
 
 
 	/** constructor **/
@@ -58,6 +61,7 @@ public class Unit {
 
 		//
 		/** @todofor now; not sure if Unit will be responsible for search or Organization
+		 * organization should search by delegating recommendation to units; units don't need (or know) global location knowledge
 		// if (Globals.debug) { System.out.println("overlap set for infoSys"); }
 		// setLocation(globalLoc);
 		// if (Globals.debug) { System.out.println("set location for infoSys"); }
@@ -65,6 +69,54 @@ public class Unit {
 		// if (Globals.debug) { System.out.println("reset search history for infoSys"); }
 		*/
 		
+	}
+
+	public String getRecommendation(Location loc) {
+		// need to take care of 2 situations: experiential search vs. comprehensive search
+		//Landscape.getFitness(Location l, boolean[] know) {
+
+		// get own current perceived fitness value
+		double currentFitness = Globals.landscape.getFitness(loc, fullKnowledge);
+
+		moveTo = null;
+//		boolean success = false;
+		int numRemainingNeighbors = neighbors.size();
+		int r = Globals.rand.nextInt(numRemainingNeighbors);
+		Location neighbor = (Location)neighbors.remove(r); // need to find global location for neighbor as well
+		String[] neighborGlobalLocString = new String[Globals.N];
+		for (int i = 0; i < Globals.N; i++) {
+			 if (neighbor.getLocationAt(i).equals(" ")) {
+				 neighborGlobalLocString[i] = globalLocation.getLocationAt(i);
+			 } else {
+				 neighborGlobalLocString[i] = neighbor.getLocationAt(i);
+			 }
+		}
+		Location neighborGlobalLocation = new Location(neighborGlobalLocString);
+		
+		double localFitness = 0d;
+		double neighborFitness = 0d;
+		if (Globals.localAssessment.equals("gl2000")) {
+			localFitness = Globals.landscape.getFitness(localLoc);
+			neighborFitness = Globals.landscape.getFitness(neighbor);
+		} else if (Globals.localAssessment.equals("ac2010")) {
+			localFitness = Globals.landscape.getFitness(globalLocation, knowledge);
+			neighborFitness = Globals.landscape.getFitness(neighborGlobalLocation, knowledge); // need to find global location for neighbor as well
+		}
+//		System.out.println("localFitness:\t" + localFitness);
+//		System.out.println("neighborFitness(" + r + "):\t" + neighborFitness);
+
+		if (neighborFitness > localFitness) {
+			// replace localLoc with neighbor & reset tried vector (no need to create new Location object)
+//			localLoc.setLocation(neighbor); // set it now or later?
+			// since moveTo was null before, we need to initialize it first and then set it's location
+			moveTo = new Location(neighbor);
+//			moveTo.setLocation(neighbor);
+			resetSearchHistory();
+//			success = true;
+		}
+		return moveTo;
+	}
+
 	}
 
 	private void setDomain(int[] domainDistributionCnts) {
@@ -135,6 +187,19 @@ public class Unit {
 		return move;
 	}
 
+	private void setNeighbors(Location loc) {
+		for (int i = 0; i < Globals.N; i++) {
+			String[] strNeighborLocation = new String[Globals.N];
+			boolean add = false;
+			for (int j = 0; j < Globals.N; j++) {
+				if (i == j) { // for focal di
+					// which are the blank ones?  knowledge? => cannot use localLoc, we're using globalLoc
+
+				}
+			}
+		}
+	}
+
 	private void setNeighbors() {
 		for (int i = 0; i < Globals.N; i++) {
 			String[] neighborLocString = new String[Globals.N];
@@ -157,8 +222,80 @@ public class Unit {
 		if (Globals.debug) { System.out.println("Neighbors for " + unitName); printNeighbors(); }
 	}
 
-	private void setNeighbors(int distance) {
+	/**
+	 *  For a given location and maxDistance, fill neighbor vector with neighbors of variations in "maxDistance" elements
+	 *  i.e., if maxDistance = 2, then add all 1-off neighbors and all 2-off neighbors
+	 *  Note: ownKnowledge is used as mask for neighbors
+	 */
+	private void setNeighbors(Location loc, int maxDistance) {
+		// get the combination of knowledge combinations for max distance
+		List<Integer> neighborCombinationKnowledgeIndices = new ArrayList<Integer>();
+		for (int i = 0; i < fullKnowledge.length; i++) {
+			if (fullKnowledge[i]) neighborCombinationKnowledgeIndices.add(i);
+		}
+
+		// get all of the combinations 
+		// e.g., if fullknowledge = [t, t, t, t, f, f, t, f] and maxDistance = 1
+		// then neighborIndexCombinations = [[], [0], [1], [2], [3], [6]]; NOTE the empty one (always returned)
+		// if maxDistance = 2
+		// then neighborIndexCombinations = [[], [0], [1], [2], [3], [6], [0,1], [0,2], [0,3], [0,6], [1,2], [1,3], [1,6], [2,3], [2,6], [3,6]]; 
+		Set<Set<Integer>> neighborIndexCombinations = getCombinationsFor(neighborCombinationKnowledgeIndices, maxDistance);
+
+		for (Set<Integer> combo : neighborIndexCombinations) {
+			if (combo.isEmpty()) {
+				//System.out.println("empty");
+				// do nothing
+			} else {
+				String[] neighborLocString = loc.getLocation();
+				int weight = 1; 
+				for (Integer comboInt : combo) { // loop through each Int in neighborCombination
+					neighborLocString[comboInt] = flip(neighborLocString[comboInt]);
+					if (othersKnowledge[comboInt]) { // if shared knowledge (if I know the other unit's knowledge)
+													 // think about incorporating what the unit knows about what the other unit knows (DIFFICULT)
+						//weight += Globals.sharedKnowledgePreferenceWeight;
+					}
+				}
+				neighbors.add(new Neighbor(neighborLocString, loc.getLocation(), weight));
+			}
+		}
+		// set neighborProbabilities?
 		
 	}
 	
+	private String flip(String value) {
+		if (value.equals("0")) {
+			return "1"; 
+		} else if (value.equals("1")) {
+			return "0"; 
+		} else {
+			Globals.debug.println("cannot flip empty value");
+			return " ";
+		}
+	}
+
+	private static Set<Set<Integer>> getCombinationsFor(List<Integer> group, int subsetSize) {
+    	Set<Set<Integer>> resultingCombinations = new HashSet<Set<Integer>> ();
+    	int totalSize=group.size();
+    	if (subsetSize > totalSize) {
+    		subsetSize = totalSize;
+    	}
+    	if (subsetSize == 0) {
+    		resultingCombinations.add(new HashSet<Integer>());
+        	//emptySet(resultingCombinations);
+    	} else if (subsetSize <= totalSize) {
+        	List<Integer> remainingElements = new ArrayList<Integer> (group);
+        	// Integer X = popLast(remainingElements);
+        	Integer X = remainingElements.remove(remainingElements.size()-1);
+
+        	Set<Set<Integer>> combinationsExclusiveX = getCombinationsFor(remainingElements, subsetSize);
+        	Set<Set<Integer>> combinationsInclusiveX = getCombinationsFor(remainingElements, subsetSize-1);
+        	for (Set<Integer> combination : combinationsInclusiveX) {
+            	combination.add(X);
+        	}
+        	resultingCombinations.addAll(combinationsExclusiveX);
+        	resultingCombinations.addAll(combinationsInclusiveX);
+    	} 
+    	return resultingCombinations;
+	}
+
 }

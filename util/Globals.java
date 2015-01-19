@@ -31,7 +31,7 @@ public class Globals {
 	public static int[] domainDistributionsCounts;
 	// public static int[] kdists;
 	public static boolean authority = false; // whether Bus can change IS or IS can change Bus; no need for now
-	public static int numAlternatives; // processing power; no need for now; 
+	public static int numAlternatives = 1; // processing power; no need for now; 
 	public static double preferentialWeightage; 
 
 	public static String reportLevel = "summary"; // reportLevel = {summary, details}

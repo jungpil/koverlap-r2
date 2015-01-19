@@ -45,4 +45,33 @@ public class Debug {
 	public static String getOutFile() {
 		return outfilename;
 	}
+
+	public static String arrayToString(boolean[] array) {
+		String retString = "["; 
+		for (int i = 0; i < array.length - 1; i++) retString += array[i] + ", ";
+		retString += array[array.length - 1] + "]";
+		return retString;
+	} 
+
+	public static String arrayToString(int[] array) {
+		String retString = "["; 
+		for (int i = 0; i < array.length - 1; i++) retString += array[i] + ", ";
+		retString += array[array.length - 1] + "]";
+		return retString;
+	} 
+
+	public static String arrayToString(double[] array) {
+		String retString = "["; 
+		for (int i = 0; i < array.length - 1; i++) retString += array[i] + ", ";
+		retString += array[array.length - 1] + "]";
+		return retString;
+	} 
+
+	public static String arrayToString(String[] array) {
+		String retString = "["; 
+		for (int i = 0; i < array.length - 1; i++) retString += array[i] + ", ";
+		retString += array[array.length - 1] + "]";
+		return retString;
+	} 
+
 }

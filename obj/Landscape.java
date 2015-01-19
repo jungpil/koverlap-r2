@@ -55,19 +55,25 @@ public class Landscape {
 	}
 	
 	/**
-	 * return fitness for a position as per almirall and casadesus-masanell
+	 * return fitness for a position as per gavetti and levinthal (2000) - cognitive simplification
 	 * @param l Location within landscape
 	 * @param know boolean array of which elements the DMU has knowledge e.g., [true, true, true, true, false, true, true, false] for Business
 	 * @return fitness value 
 	 */
 	public double getFitness(Location l, boolean[] know) {
 		double fitness = 0d;
+
+		String[] locString = l.getLocation();
+		for (int i = 0; i < know.length; i++) {
+			if (!know[i]) locString[i] = " ";
+		}
+		Location maskedLoc = new Location(locString);
+
 		for (int i = 0; i < Globals.N; i++) {
-			if (know[i]) {
-				String s = l.getLocationAt(i, im);
-				double d = getFitnessContribution(s, i);
-				fitness += d;
-			}
+			String s = maskedLoc.getLocationAt(i, im);
+			double d = getFitnessContribution(s, i);
+			System.out.println("s: " + s + ", i: " + i + ": " + d);
+			fitness += d;
 		}
 		fitness /= Globals.N;
 		return fitness;

@@ -34,9 +34,6 @@ public class Unit {
 	//private Vector<Location> neighbors;
 	private Vector<Neighbor> neighbors;
 
-
-
-
 	/** constructor **/
 	/** @params
 	 * idx 					- index unit
@@ -50,7 +47,7 @@ public class Unit {
 	 * called by Organization: units[i] = new Unit(i, Globals.unitNames[i], Globals.domainDistributionCounts, Globals.localKnowledgeIndices, Globals.knowledgeOverlapIndex[i]);
 	 **/
 	//public Unit(int idx, String name, int[] domainDistributionCnts, String knowledgeIdxs, int knowledgeOverlapSize) {
-	public Unit(int idx, String name, int[] domainDistributionCnts, String knowledgeIdxs) {
+	public Unit(int idx, String name, Location loc, int[] domainDistributionCnts, String knowledgeIdxs) {
 		// set unit index and name
 		index = idx;
 		unitName = name;
@@ -59,6 +56,13 @@ public class Unit {
 		setDomain(domainDistributionCnts); // set own knowledge domain 
 		setKnowledges(knowledgeIdxs);
 
+		// set neighbors for current location (init); @note: no need to save location; only need location info to set neighbors
+		resetSearchHistory(loc); // initialize nieghbor vector and sets neighbors
+
+		Globals.debug.println("Unit " + idx + " (" + name + ") initiated with location " + loc.toString 
+								+ ", ownknowledge " + Globals.debug.arrayToString(ownknowledge) 
+								+ ", othersKnowledge " + Globals.debug.arrayToString(othersKnowledge) 
+								+ ", domain " + Globals.debug.arrayToString(domain));
 		//
 		/** @todofor now; not sure if Unit will be responsible for search or Organization
 		 * organization should search by delegating recommendation to units; units don't need (or know) global location knowledge
@@ -78,11 +82,23 @@ public class Unit {
 		// get own current perceived fitness value
 		double currentFitness = Globals.landscape.getFitness(loc, fullKnowledge);
 
-		moveTo = null;
-//		boolean success = false;
-		int numRemainingNeighbors = neighbors.size();
-		int r = Globals.rand.nextInt(numRemainingNeighbors);
-		Location neighbor = (Location)neighbors.remove(r); // need to find global location for neighbor as well
+		// for now we'll just implement experiential search
+		// get a random neighbor to consider -- remove one from set of size neighbors.size()
+		// @todo: HERE I'M GETTING A RANDOM NEIGHBOR, BUT I NEED TO GET A PROBABILITY WEIGHTED RANDOM NEIGHBOR!!!
+		Location neighbor = (Location)neighbors.remove(Globals.rand.nextInt(neighbors.size()));
+		double neighborFitness = Globals.landscape.getFitness(neighbor, fullKnowledge);
+
+		if (neighborFitness > currentFitness) {
+			
+			return neighbor;
+		} else {
+			return null;
+		}
+//		moveTo = null;
+// //		boolean success = false;
+// 		int numRemainingNeighbors = neighbors.size();
+// 		int r = Globals.rand.nextInt(numRemainingNeighbors);
+// 		Location neighbor = (Location)neighbors.remove(r); // need to find global location for neighbor as well
 		String[] neighborGlobalLocString = new String[Globals.N];
 		for (int i = 0; i < Globals.N; i++) {
 			 if (neighbor.getLocationAt(i).equals(" ")) {
@@ -115,7 +131,6 @@ public class Unit {
 //			success = true;
 		}
 		return moveTo;
-	}
 
 	}
 
@@ -296,6 +311,11 @@ public class Unit {
         	resultingCombinations.addAll(combinationsInclusiveX);
     	} 
     	return resultingCombinations;
+	}
+
+	private void resetSearchHistory(Location loc) {
+		neighbors = new Vector<Location>();
+		setNeighbors(loc, Globals.numAlternative);
 	}
 
 }

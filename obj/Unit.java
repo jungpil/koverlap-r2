@@ -10,14 +10,16 @@ public class Unit {
 //	private int localKnowledgeIndex[] = new int[Globals.N / 2]; // [commented 3/24/12]
 	/**
 	 * domain  			- what elements are within the purview of a unit
-	 * fullKnowledge 	- what the unit knows; (includes overlapping knowledge of other domains) --> ownKnowledge OR(+) othersKnowledge
-	 * ownKnowledge		- what the unit knows in own domain; --> domain AND fullKnowledge
-	 * othersKnowledge 	- what the unit knows in others' domains; 
+	 * fullKnowledge 	- what the unit knows; (includes overlapping knowledge of other domains) --> withinDomainOwnKnowledge OR(+) outsideDomainOwnKnowledge
+	 * withinDomainOwnKnowledge		- what the unit knows in own domain; --> domain AND fullKnowledge
+	 * outsideDomainOwnKnowledge 	- what the unit knows in others' domains; 
+	 * withinDomainOthersKnowledge  - what other units know of my own domain;
 	 **/
-	private boolean domain[];
-	private boolean fullKnowledge[];
-	private boolean ownKnowledge[];
-	private boolean othersKnowledge[];
+	private boolean[] domain;
+	private boolean[] fullKnowledge[];
+	private boolean[] withinDomainOwnKnowledge;
+	private boolean[] outsideDomainOwnKnowledge;
+	private int[] 
 
 	// private boolean control[] = new boolean[Globals.N]; // NO LONGER NEEDED; authority is assumed to be false; so for now this is the same as domain[]
 //	private Location globalLocation;
@@ -60,8 +62,8 @@ public class Unit {
 		resetSearchHistory(loc); // initialize nieghbor vector and sets neighbors
 
 		Globals.debug.println("Unit " + idx + " (" + name + ") initiated with location " + loc.toString 
-								+ ", ownknowledge " + Globals.debug.arrayToString(ownknowledge) 
-								+ ", othersKnowledge " + Globals.debug.arrayToString(othersKnowledge) 
+								+ ", withinDomainOwnKnowledge " + Globals.debug.arrayToString(withinDomainOwnKnowledge) 
+								+ ", outsideDomainOwnKnowledge " + Globals.debug.arrayToString(outsideDomainOwnKnowledge) 
 								+ ", domain " + Globals.debug.arrayToString(domain));
 		//
 		/** @todofor now; not sure if Unit will be responsible for search or Organization
@@ -152,8 +154,8 @@ public class Unit {
 
 	private void setKnowledges(String knowledgeIdxs) {
 		fullKnowledge = new boolean[Globals.N]; // initialized to all false 
-		ownKnowledge = new boolean[Globals.N]; // initialized to all false 
-		othersKnowledge = new boolean[Globals.N]; // initialized to all false 
+		withinDomainOwnKnowledge = new boolean[Globals.N]; // initialized to all false 
+		outsideDomainOwnKnowledge = new boolean[Globals.N]; // initialized to all false 
 
 		// 1.  set fullKnowledge[] -- what the unit knows including overlapping knowledge of others' domains
 		for (int i = 0; i < knowledgeIdxs.split(";").length; i++) {
@@ -169,25 +171,25 @@ public class Unit {
 		for (int i = 0; i < fullKnowledge.length; i++) {
 			if (fullKnoweldge[i]) { // if unit "knows"
 				if (domain[i]) { // if within unit's own domain 
-					ownKnowledge[i] = true;
+					withinDomainOwnKnowledge[i] = true;
 				} else { // if outside of unit's own domain 
-					othersKnowledge[i] = true;
+					outsideDomainOwnKnowledge[i] = true;
 				}
 			}
 		}
 	}
 
 	// get own knowledge size -- how many elements the unit knows within own domain
-	public int getOwnKnowledgeSize() {
+	public int getWithinDomainOwnKnowledgeSize() {
 		int count = 0;
-		for (boolean boolValue : ownKnowledge) if (boolValue) count++;
+		for (boolean boolValue : withinDomainOwnKnowledge) if (boolValue) count++;
 		return count;
 	}
 
 	// get overlapping knowledge size -- how many elements the unit knows outside own domain
-	public int getOverlappingKnowedgeSize() {
+	public int getOutsideDomainOwnKnowledge() {
 		int count = 0;
-		for (boolean boolValue : othersKnowledge) if (boolValue) count++;
+		for (boolean boolValue : outsideDomainOwnKnowledge) if (boolValue) count++;
 		return count;
 	}
 
@@ -288,7 +290,7 @@ public class Unit {
 		}
 	}
 
-	private static Set<Set<Integer>> getCombinationsFor(List<Integer> group, int subsetSize) {
+	private Set<Set<Integer>> getCombinationsFor(List<Integer> group, int subsetSize) {
     	Set<Set<Integer>> resultingCombinations = new HashSet<Set<Integer>> ();
     	int totalSize=group.size();
     	if (subsetSize > totalSize) {

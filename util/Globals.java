@@ -40,6 +40,11 @@ public class Globals {
 	public static int startLandscapeID;
 	public static String localAssessment = "ac2010"; // for almirall & casadesus-masanell 2010 or "gl2000" for gavetti and levinthal
 	// @todo: check what is the difference in implementation between ac2010 and gl2000
+	public static String neighborSelectionApproach = "random"; // "random" vs. "myknowledge" vs. "othersknowledge" vs. "cross"
+									// random -> pick random neighbor
+									// myknowledge -> pick based on my shared knowledge of other domains 
+									// othersknowledge -> pick based on others shared knowledge of my domain
+									// cross -> ?????
 
 	/**
 	 * utils
@@ -76,6 +81,7 @@ public class Globals {
 				orgType = p.getProperty("orgType");
 				numUnits = Integer.parseInt(p.getProperty("numUnits"));
 				unitNames = p.getProperty("unitNames").split(","); // array
+				neighborSelectionApproach = p.getProperty("search");
 
 				// [added 3/24/12]
 

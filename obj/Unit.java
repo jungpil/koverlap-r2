@@ -19,7 +19,8 @@ public class Unit {
 	private boolean[] fullKnowledge[];
 	private boolean[] withinDomainOwnKnowledge;
 	private boolean[] outsideDomainOwnKnowledge;
-	private int[] 
+	private int[] withinDomainOthersKnowledge;
+	private double[] selectionProbabilities;
 
 	// private boolean control[] = new boolean[Globals.N]; // NO LONGER NEEDED; authority is assumed to be false; so for now this is the same as domain[]
 //	private Location globalLocation;
@@ -34,7 +35,7 @@ public class Unit {
 
 //	private boolean move; 
 	//private Vector<Location> neighbors;
-	private Vector<Neighbor> neighbors;
+	private Vector<Location> neighbors;
 
 	/** constructor **/
 	/** @params
@@ -54,7 +55,7 @@ public class Unit {
 		index = idx;
 		unitName = name;
 
-		// set unit's knowledge domain (control)
+		// set unit's knowledge domain (control) ---- MUST BE DONE IN THIS ORDER domain[] needs to be set before knowledge can be set
 		setDomain(domainDistributionCnts); // set own knowledge domain 
 		setKnowledges(knowledgeIdxs);
 
@@ -64,6 +65,7 @@ public class Unit {
 		Globals.debug.println("Unit " + idx + " (" + name + ") initiated with location " + loc.toString 
 								+ ", withinDomainOwnKnowledge " + Globals.debug.arrayToString(withinDomainOwnKnowledge) 
 								+ ", outsideDomainOwnKnowledge " + Globals.debug.arrayToString(outsideDomainOwnKnowledge) 
+								+ ", withinDomainOthersKnowledge " + Globals.debug.arrayToString(withinDomainOthersKnowledge) 
 								+ ", domain " + Globals.debug.arrayToString(domain));
 		//
 		/** @todofor now; not sure if Unit will be responsible for search or Organization
@@ -136,6 +138,24 @@ public class Unit {
 
 	}
 
+	private Location pickNeighbor() {
+		// implement neighbor selection method here
+		// Globals.neighborSelectionApproach = {"random", "myknowledge", "othersknowledge", "cross"}
+		// unfortunately Java doesn't support String-based switch statement
+
+		// // ACTUALLY DON'T DO IT HERE.  WE NEED TO DO IT WHEN SETTING THE WEIGHTS
+		// if (Globals.neighborSelectionApproach.equals("random")) {
+		// 	// pick random neighbor from neighbor set and return
+		// 	return (Location)neighbors.remove(Globals.rand.nextInt(neighbors.size()));
+		// } else if (Globals.neighborSelectionApproach.equals("myknowledge")) {
+		// 	// give more probability weight to neighbor if 
+		// } else if (Globals.neighborSelectionApproach.equals("othersknowledge")) {
+		// } else if (Globals.neighborSelectionApproach.equals("cross")) {
+
+		// }
+		Location neighbor = (Location)neighbors.remove(Globals.rand.nextInt(neighbors.size()));
+	}
+
 	private void setDomain(int[] domainDistributionCnts) {
 		// set control domain; e.g., domainDistributionCnts = [4,8,4] 
 		// => e.g., domain[] for unit1 = [t,t,t,t,f,f,f,f,f,f,f,f,f,f,f,f] for unit2 = [f,f,f,f,t,t,t,t,t,t,t,t,f,f,f,f]
@@ -152,17 +172,66 @@ public class Unit {
 		}
 	}
 
+
+	private void setNeighborSelectionProbabilities(Location loc) {
+		// implementation neighbor selection probability computation
+		// Globals.neighborSelectionApproach = {"random", "myknowledge", "othersknowledge", "cross"}
+		
+		// init selectionProbabilities array to fit neighbor vector size (to account for previously visited/discarded locations)
+		selectionProbabilities = new double[neighbors.size()];
+
+		// ACTUALLY DON'T DO IT HERE.  WE NEED TO DO IT WHEN SETTING THE WEIGHTS
+		if (Globals.neighborSelectionApproach.equals("random")) { // option 0
+			// pick random neighbor from neighbor set and return
+			for (int i = 0; i < selectionProbabilities.length; i++) selectionProbabilities[i] = 1d / selectionProbabilities.length;
+		} else if (Globals.neighborSelectionApproach.equals("myknowledge")) { // option 2
+			// also consider neighbors that alter what the focal unit knows (setNeighbors must change!!)
+			for (int i = 0; i < selectionProbabilities.length; i++) selectionProbabilities[i] = 1d / selectionProbabilities.length;
+		} else if (Globals.neighborSelectionApproach.equals("othersknowledge")) { // option 1
+			// give preferential weight to other units' knowledge of my domain
+			// check neighbors diff with current location and 
+
+			for (int i = 0; i < neighbors.size(); i++) {
+				Location nb = (Location)neighbors.get(i);
+				int[] countDiff = new int[Globals.N];
+				for (int j = 0; j < Globals.N; j++) {
+					if (!nb.getLocationAt(j).equals(loc.getLocationAt(j))) {
+						if (withinDomainOthersKnowledge[j] > 0) { // some other unit knows this element
+							//XXXXXXXXXXXXXXX
+							//XXXXXXXXXXXXXXX
+							//XXXXXXXXXXXXXXX
+							//XXXXXXXXXXXXXXX
+						}
+					}
+				}
+			}
+		} else if (Globals.neighborSelectionApproach.equals("cross")) { // option 4
+
+		}
+	}
+
+
+	//knoweldgeIdxs = "1,1,0,0,0,0;0,0,1,1,0,0;0,0,0,0,1,1" -> [[1,1,0,0,0,0],[0,0,1,1,0,0],[0,0,0,0,1,1]]
 	private void setKnowledges(String knowledgeIdxs) {
+		// note: setDomain(domainDistributionCounts) must be completed before this method -> domain[] has to be set 
+		// done in Constructor 
 		fullKnowledge = new boolean[Globals.N]; // initialized to all false 
 		withinDomainOwnKnowledge = new boolean[Globals.N]; // initialized to all false 
 		outsideDomainOwnKnowledge = new boolean[Globals.N]; // initialized to all false 
+		withinDomainOthersKnowledge = new int[Globals.N]; // innitialize to all zero (0)
 
 		// 1.  set fullKnowledge[] -- what the unit knows including overlapping knowledge of others' domains
 		for (int i = 0; i < knowledgeIdxs.split(";").length; i++) {
-			if (index == i) {
+			if (index == i) { // for focal unit
 				for (int j = 0; j < knowledgeIdxs.split(";")[i].split(",").length; j++) {
 					if (knowledgeIdxs.split(";")[i].split(",")[j].equals("1")) {
 						fullKnowledge[j] = true;
+					}
+				}
+			} else { // for other units
+				for (int j = 0; j < knowledgeIdxs.split(";")[i].split(",").length; j++) {
+					if (knowledgeIdxs.split(";")[i].split(",")[j].equals("1")) {
+						if (domain[j]) withinDomainOthersKnowledge[j]++;
 					}
 				}
 			}
@@ -272,7 +341,8 @@ public class Unit {
 						//weight += Globals.sharedKnowledgePreferenceWeight;
 					}
 				}
-				neighbors.add(new Neighbor(neighborLocString, loc.getLocation(), weight));
+				neighbors.add(new Location(neighborLocString));
+				// neighbors.add(new Neighbor(neighborLocString, loc.getLocation(), weight));
 			}
 		}
 		// set neighborProbabilities?

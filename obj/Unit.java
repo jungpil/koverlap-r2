@@ -176,11 +176,18 @@ public class Unit {
 	private void setNeighborSelectionProbabilities(Location loc) {
 		// implementation neighbor selection probability computation
 		// Globals.neighborSelectionApproach = {"random", "myknowledge", "othersknowledge", "cross"}
+		// 1. random - pick a random neighbor; neighbors only perturb within domain elements
+		// 2. myknowledge - pick a random neighbor; neighbor set also includes perturbations of other domain elements if focal unit has shared knowledge 
+		//                  -> if I know, then I can consider implications of those changes as well
+		// 3. othersknowledge - give preferential weight (weighted probability by Globals.preferenceWeightages) for elements within my domain for which other units have shared knowledge
+		//                     -> if other unit knows an element, then focus on setting that first; neighbor set is same as random
+		// 4. cross - combination of myknowledge and othersknowledge - preferential weightage + expanded neighborset
 		
 		// init selectionProbabilities array to fit neighbor vector size (to account for previously visited/discarded locations)
 		selectionProbabilities = new double[neighbors.size()];
 
-		// ACTUALLY DON'T DO IT HERE.  WE NEED TO DO IT WHEN SETTING THE WEIGHTS
+		// ACTUALLY DON'T DO IT HERE.  WE NEED TO DO IT WHEN SETTING THE WEIGHTS 
+		// we could combine random + myknowledge and othersknowledge + cross but since these may change, let's keep them separate for now
 		if (Globals.neighborSelectionApproach.equals("random")) { // option 0
 			// pick random neighbor from neighbor set and return
 			for (int i = 0; i < selectionProbabilities.length; i++) selectionProbabilities[i] = 1d / selectionProbabilities.length;
@@ -194,19 +201,35 @@ public class Unit {
 			for (int i = 0; i < neighbors.size(); i++) {
 				Location nb = (Location)neighbors.get(i);
 				int[] countDiff = new int[Globals.N];
+				for (int j = 0; j < countDiff.length; j++) countDiff[j] = 1; // initialize with default value = 1
+
+				// need to find neighbor which has different value (from current location) for elements 
 				for (int j = 0; j < Globals.N; j++) {
-					if (!nb.getLocationAt(j).equals(loc.getLocationAt(j))) {
+					if (!nb.getLocationAt(j).equals(loc.getLocationAt(j))) { // element index
 						if (withinDomainOthersKnowledge[j] > 0) { // some other unit knows this element
-							//XXXXXXXXXXXXXXX
-							//XXXXXXXXXXXXXXX
-							//XXXXXXXXXXXXXXX
-							//XXXXXXXXXXXXXXX
-						}
-					}
+							countDiff[j] *= withinDomainOthersKnowledge[j] * Globals.preferentialWeightage;
+						} // else { countDiff[j] = 1; } // if other unit does not know this element j
+					} // else { countDiff[j] = 1; } if value of this element for considered neighbor is the same as current location value for this element
 				}
 			}
 		} else if (Globals.neighborSelectionApproach.equals("cross")) { // option 4
+			// give preferential weight to other units' knowledge of my domain
+			// check neighbors diff with current location and 
 
+			for (int i = 0; i < neighbors.size(); i++) {
+				Location nb = (Location)neighbors.get(i);
+				int[] countDiff = new int[Globals.N];
+				for (int j = 0; j < countDiff.length; j++) countDiff[j] = 1; // initialize with default value = 1
+
+				// need to find neighbor which has different value (from current location) for elements 
+				for (int j = 0; j < Globals.N; j++) {
+					if (!nb.getLocationAt(j).equals(loc.getLocationAt(j))) { // element index
+						if (withinDomainOthersKnowledge[j] > 0) { // some other unit knows this element
+							countDiff[j] *= withinDomainOthersKnowledge[j] * Globals.preferentialWeightage;
+						} // else { countDiff[j] = 1; } // if other unit does not know this element j
+					} // else { countDiff[j] = 1; } if value of this element for considered neighbor is the same as current location value for this element
+				}
+			}
 		}
 	}
 
@@ -314,26 +337,35 @@ public class Unit {
 	 *  Note: ownKnowledge is used as mask for neighbors
 	 */
 	private void setNeighbors(Location loc, int maxDistance) {
-		// get the combination of knowledge combinations for max distance
-		List<Integer> neighborCombinationKnowledgeIndices = new ArrayList<Integer>();
-		for (int i = 0; i < fullKnowledge.length; i++) {
-			if (fullKnowledge[i]) neighborCombinationKnowledgeIndices.add(i);
+		// get the combination of knowledge combinations for max distance for own knowledge
+		List<Integer> ownNeighborCombinationKnowledgeIndices = new ArrayList<Integer>();
+		for (int i = 0; i < withinDomainOwnKnowledge.length; i++) {
+			if (withinDomainOwnKnowledge[i]) ownNeighborCombinationKnowledgeIndices.add(i);
 		}
 
 		// get all of the combinations 
-		// e.g., if fullknowledge = [t, t, t, t, f, f, t, f] and maxDistance = 1
+		// e.g., if withinDomainOwnKnowledge = [t, t, t, t, f, f, t, f] and maxDistance = 1
 		// then neighborIndexCombinations = [[], [0], [1], [2], [3], [6]]; NOTE the empty one (always returned)
 		// if maxDistance = 2
 		// then neighborIndexCombinations = [[], [0], [1], [2], [3], [6], [0,1], [0,2], [0,3], [0,6], [1,2], [1,3], [1,6], [2,3], [2,6], [3,6]]; 
-		Set<Set<Integer>> neighborIndexCombinations = getCombinationsFor(neighborCombinationKnowledgeIndices, maxDistance);
+		Set<Set<Integer>> ownNeighborIndexCombinations = getCombinationsFor(ownNeighborCombinationKnowledgeIndices, maxDistance);
 
-		for (Set<Integer> combo : neighborIndexCombinations) {
+		if ((Globals.neighborSelectionApproach.equals("myknowledge")) || Globals.neighborSelectionApproach.equals("cross")) { // option 2 or 4
+			// get the combination of knowledge combinations for max distance for shared knowledge in other's domain
+			List<Integer> othersNeighborCombinationKnowledgeIndices = new ArrayList<Integer>();
+			for (int i = 0; i < outsideDomainOwnKnowledge.length; i++) {
+				if (outsideDomainOwnKnowledge[i]) othersNeighborCombinationKnowledgeIndices.add(i);
+			}
+			Set<Set<Integer>> othersNeighborIndexCombinations = getCombinationsFor(othersNeighborCombinationKnowledgeIndices, othersNeighborCombinationKnowledgeIndices.size());
+		}
+
+		for (Set<Integer> combo : ownNeighborIndexCombinations) {
 			if (combo.isEmpty()) {
-				//System.out.println("empty");
-				// do nothing
+				// System.out.println("empty");
+				// do nothing, there is always one empty one that is returned -> ignore
 			} else {
 				String[] neighborLocString = loc.getLocation();
-				int weight = 1; 
+
 				for (Integer comboInt : combo) { // loop through each Int in neighborCombination
 					neighborLocString[comboInt] = flip(neighborLocString[comboInt]);
 					if (othersKnowledge[comboInt]) { // if shared knowledge (if I know the other unit's knowledge)
@@ -341,11 +373,22 @@ public class Unit {
 						//weight += Globals.sharedKnowledgePreferenceWeight;
 					}
 				}
+
+				if ((Globals.neighborSelectionApproach.equals("myknowledge")) || Globals.neighborSelectionApproach.equals("cross")) { // option 2 or 4
+					for (Set<Integer> sharedCombo : othersNeighborIndexCombinations) {
+						if (!sharedCombo.isEmpty()) {
+							for (Integer sharedComboInt : sharedCombo) {
+								neighborLocString[sharedComboInt] = flip(neighborLocString[sharedComboInt]);
+							}
+						}
+					}
+				}
+	
 				neighbors.add(new Location(neighborLocString));
+				Globals.debug.println("add neighbor: " + Globals.arrayToString(neighborLocString));
 				// neighbors.add(new Neighbor(neighborLocString, loc.getLocation(), weight));
 			}
 		}
-		// set neighborProbabilities?
 		
 	}
 	

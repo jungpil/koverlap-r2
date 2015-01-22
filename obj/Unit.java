@@ -2,7 +2,11 @@ package obj;
 
 import java.util.Collections;
 import java.util.Vector;
+import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 import util.Globals;
+import util.Debug;
 
 public class Unit {
 	private int index;
@@ -62,11 +66,11 @@ public class Unit {
 		// set neighbors for current location (init); @note: no need to save location; only need location info to set neighbors
 		resetSearchHistory(loc); // initialize nieghbor vector and sets neighbors
 
-		Globals.debug.println("Unit " + idx + " (" + name + ") initiated with location " + loc.toString 
-								+ ", withinDomainOwnKnowledge " + Globals.debug.arrayToString(withinDomainOwnKnowledge) 
-								+ ", outsideDomainOwnKnowledge " + Globals.debug.arrayToString(outsideDomainOwnKnowledge) 
-								+ ", withinDomainOthersKnowledge " + Globals.debug.arrayToString(withinDomainOthersKnowledge) 
-								+ ", domain " + Globals.debug.arrayToString(domain));
+		Debug.println("Unit " + idx + " (" + name + ") initiated with location " + loc.toStrin() 
+								+ ", withinDomainOwnKnowledge " + Debug.arrayToString(withinDomainOwnKnowledge) 
+								+ ", outsideDomainOwnKnowledge " + Debug.arrayToString(outsideDomainOwnKnowledge) 
+								+ ", withinDomainOthersKnowledge " + Debug.arrayToString(withinDomainOthersKnowledge) 
+								+ ", domain " + Debug.arrayToString(domain));
 		//
 		/** @todofor now; not sure if Unit will be responsible for search or Organization
 		 * organization should search by delegating recommendation to units; units don't need (or know) global location knowledge
@@ -79,7 +83,7 @@ public class Unit {
 		
 	}
 
-	public String getRecommendation(Location loc) {
+	public Location getRecommendation(Location loc) {
 		// need to take care of 2 situations: experiential search vs. comprehensive search
 		//Landscape.getFitness(Location l, boolean[] know) {
 
@@ -296,6 +300,13 @@ public class Unit {
 		return move;
 	}
 
+	public boolean hasNeighbors() {
+		if (neighbors.size() > 0) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 	private void setNeighbors(Location loc) {
 		for (int i = 0; i < Globals.N; i++) {
 			String[] strNeighborLocation = new String[Globals.N];
@@ -309,27 +320,28 @@ public class Unit {
 		}
 	}
 
-	private void setNeighbors() {
-		for (int i = 0; i < Globals.N; i++) {
-			String[] neighborLocString = new String[Globals.N];
-			boolean add = false;
-			for (int j = 0; j < Globals.N; j++) {
-				if (i == j) {
-					if (localLoc.getLocationAt(j).equals("1")) {
-						neighborLocString[j] = "0"; add = true;
-					} else if (localLoc.getLocationAt(j).equals("0")) {
-						neighborLocString[j] = "1"; add = true;
-					} // else locationAt is blank so do nothing
-				} else { // all other i != j
-					neighborLocString[j] = localLoc.getLocationAt(j);
-				}
-			}
-			if (add) { neighbors.add(new Location(neighborLocString)); }
-		}
-		//Collections.shuffle(neighbors);  // shuffle so that order of retrieval is randomized
-		
-		if (Globals.debug) { System.out.println("Neighbors for " + unitName); printNeighbors(); }
-	}
+//	private void setNeighbors() {
+//		for (int i = 0; i < Globals.N; i++) {
+//			String[] neighborLocString = new String[Globals.N];
+//			boolean add = false;
+//			for (int j = 0; j < Globals.N; j++) {
+//				if (i == j) {
+//					if (localLoc.getLocationAt(j).equals("1")) {
+//						neighborLocString[j] = "0"; add = true;
+//					} else if (localLoc.getLocationAt(j).equals("0")) {
+//						neighborLocString[j] = "1"; add = true;
+//					} // else locationAt is blank so do nothing
+//				} else { // all other i != j
+//					neighborLocString[j] = localLoc.getLocationAt(j);
+//				}
+//			}
+//			if (add) { neighbors.add(new Location(neighborLocString)); }
+//		}
+//		//Collections.shuffle(neighbors);  // shuffle so that order of retrieval is randomized
+//		
+//		Debug.println("Neighbors for " + unitName); 
+//		printNeighbors(); 
+//	}
 
 	/**
 	 *  For a given location and maxDistance, fill neighbor vector with neighbors of variations in "maxDistance" elements
@@ -403,6 +415,10 @@ public class Unit {
 		}
 	}
 
+	public void printAllNeighbors() {
+		
+	}
+	
 	private Set<Set<Integer>> getCombinationsFor(List<Integer> group, int subsetSize) {
     	Set<Set<Integer>> resultingCombinations = new HashSet<Set<Integer>> ();
     	int totalSize=group.size();

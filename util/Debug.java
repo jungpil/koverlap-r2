@@ -19,7 +19,7 @@ public class Debug {
 		debug = debugOn;
 		try {
 			if (debugToFile) {
-				outfilename = "debug/debug-" + System.currentTimeMillis().toString() + ".txt";
+				outfilename = "debug/debug-" + System.currentTimeMillis() + ".txt";
 				debugPrintWriter = new PrintWriter(new FileOutputStream(outfilename, true), true);
 			} else {
 				debugPrintWriter = new PrintWriter(System.err);
@@ -38,7 +38,7 @@ public class Debug {
 		if (debug) debugPrintWriter.println(s);
 	}
 
-	public static String isDebugOn() {
+	public static boolean isDebugOn() {
 		return debug;
 	}
 

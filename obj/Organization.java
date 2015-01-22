@@ -38,9 +38,9 @@ public class Organization {
 		*/
 		
 		// no need to make specific for Business/InfoSys -- make general
-		for (int i = 0; i < Globals.numSubOrgs; i++) {
+		for (int i = 0; i < Globals.numUnits; i++) {
 			//units[i] = new DMU(i, Globals.unitNames[i], location, Globals.kdists[i], Globals.localKnowledgeIndex[i], Globals.knowledgeOverlapIndex[i]);
-			units[i] = new Unit(i, Globals.unitNames[i], Globals.domainDistributionCounts, Globals.localKnowledgeIndices);
+			units[i] = new Unit(i, Globals.unitNames[i], location, Globals.domainDistributionsCounts, Globals.localKnowledgeIndices);
 		}
 		/* period = 0; */
 		completed = false;
@@ -97,44 +97,44 @@ public class Organization {
 		return Globals.landscape.getFitness(location);
 	}
 
-	protected void updateLocation(Location dmuLocalLoc, int dmuIndex) {
-		// get the filter from the DMU and update the location 
-		boolean filter[] = new boolean[Globals.N];
-		System.arraycopy(units[dmuIndex].getControlFilter(), 0, filter, 0, Globals.N);
-		String[] newGlobalLocation = new String[Globals.N];
-		for (int i = 0; i < Globals.N; i++) {
-			if (filter[i]) { 
-				newGlobalLocation[i] = dmuLocalLoc.getLocationAt(i);
-			} else {
-				newGlobalLocation[i] = location.getLocationAt(i);
-			}
-		}
-		location.setLocation(newGlobalLocation);		
-	}
+//	protected void updateLocation(Location dmuLocalLoc, int dmuIndex) {
+//		// get the filter from the DMU and update the location 
+//		boolean filter[] = new boolean[Globals.N];
+//		System.arraycopy(units[dmuIndex].getControlFilter(), 0, filter, 0, Globals.N);
+//		String[] newGlobalLocation = new String[Globals.N];
+//		for (int i = 0; i < Globals.N; i++) {
+//			if (filter[i]) { 
+//				newGlobalLocation[i] = dmuLocalLoc.getLocationAt(i);
+//			} else {
+//				newGlobalLocation[i] = location.getLocationAt(i);
+//			}
+//		}
+//		location.setLocation(newGlobalLocation);		
+//	}
 		
 	// PRINTERS
-	public void printDetails(int period) {
-		double globalFitness = Globals.landscape.getFitness(location);
-		double[] localFitness = new double[Globals.numSubOrgs];
-		for (int i = 0; i < Globals.numSubOrgs; i++) {
-			localFitness[i] = units[i].getFitness();
-		}
-		String searchStatusString = "";
-		String localFitnessString = "";
-		for (int i = 0; i < Globals.numSubOrgs; i++) {
-			searchStatusString += searchStatus[i] + "\t";
-			localFitnessString += localFitness[i] + "\t";
-		}
-		
-		if (!completed) {
-			Globals.out.println(period + "\t" + index + "\t" + searchStatusString + next + "\t" + location.toString() + "\t" + localFitnessString + globalFitness);
-		} else {
-			if (!lastPrinted) {
-				Globals.out.println(period + "\t" + index + "\t" + searchStatusString + next + "\t" + location.toString() + "\t" + localFitnessString + globalFitness);
-				lastPrinted = true;
-			}
-		}
-	}
+//	public void printDetails(int period) {
+//		double globalFitness = Globals.landscape.getFitness(location);
+//		double[] localFitness = new double[Globals.numUnits];
+//		for (int i = 0; i < Globals.numUnits; i++) {
+//			localFitness[i] = units[i].getFitness();
+//		}
+//		String searchStatusString = "";
+//		String localFitnessString = "";
+//		for (int i = 0; i < Globals.numUnits; i++) {
+//			searchStatusString += searchStatus[i] + "\t";
+//			localFitnessString += localFitness[i] + "\t";
+//		}
+//		
+//		if (!completed) {
+//			Globals.out.println(period + "\t" + index + "\t" + searchStatusString + next + "\t" + location.toString() + "\t" + localFitnessString + globalFitness);
+//		} else {
+//			if (!lastPrinted) {
+//				Globals.out.println(period + "\t" + index + "\t" + searchStatusString + next + "\t" + location.toString() + "\t" + localFitnessString + globalFitness);
+//				lastPrinted = true;
+//			}
+//		}
+//	}
 	
 	public Unit getUnit(int i) {
 		return units[i];
@@ -161,8 +161,8 @@ public class Organization {
 //		System.out.println("initial location: " + l.toString());
 		Organization o = new Organization(0);
 		o.printLocation();
-		o.printDMUNeighbors(0);
-		o.printDMUNeighbors(1);
+//		o.printDMUNeighbors(0);
+//		o.printDMUNeighbors(1);
 		
 	}
 	

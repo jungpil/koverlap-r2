@@ -42,58 +42,58 @@ public class Agile extends Organization {
 
 	}
 
-	public void run_old() {
-		if (!completed) {
-			next = next(lastDMU);
-			
-			int other = Math.abs(next - 1);
-//			System.out.println("Location: " + location.toString());
-			if (next != -1) {
-				// moveTo is just a localLocation so I need to figure out the full location to update the org's location
-				Location moveTo = units[next].search(); 
-				if (moveTo == null) { // search was unsuccessful
-					if (Globals.debug) { System.out.println("Agile.run(): search unsuccessful (moveTo==null)"); }
-					// check if next is at local optimum
-					if (units[next].isLocalOptimum()) {
-						// if yes, 
-						//		set own (next) searchstatus to -1
-						searchStatus[next] = -1;
-						// 		check if other's search status == -2
-						if (searchStatus[other] == -2) {
-							//		if yes, 
-							//				reset other's search history
-							units[other].resetHistory();
-						}
-					} else {
-						// if no, 
-						//		set own (next) search status to 0
-						searchStatus[next] = 0;
-					}
-					
-				} else { // search was successful and moveTo is the new localLocation for the business unit (DMU) -- business or infosys
-					if (Globals.debug) { System.out.println("Agile.run(): search successful (moveTo==" + moveTo.toString() + ")"); }
-					// set Org's location to match moveTo 
-					updateLocation(moveTo, next);
-					// update own (next) localLocation
-					units[next].setLocation(location);
-					// update other's localLocaiotn
-					units[other].setLocation(location);
-					// set own (next) searchstatus to 1
-					searchStatus[next] = 1;
-					// reset own (next) searchhistory
-					units[next].resetHistory();
-					// reset other's searchhistory
-					units[other].resetHistory();
-					// set other's searchstatus to -2;
-					searchStatus[other] = -2;
-				}
-			} else {
-				completed = true;
-				// this should never happen --> could not find next move (i.e., both bus and IS are at local optima)
-			}
-			lastDMU = next;
-		}
-	}
+//	public void run_old() {
+//		if (!completed) {
+//			next = next(lastDMU);
+//			
+//			int other = Math.abs(next - 1);
+////			System.out.println("Location: " + location.toString());
+//			if (next != -1) {
+//				// moveTo is just a localLocation so I need to figure out the full location to update the org's location
+//				Location moveTo = units[next].search(); 
+//				if (moveTo == null) { // search was unsuccessful
+//					if (Globals.debug) { System.out.println("Agile.run(): search unsuccessful (moveTo==null)"); }
+//					// check if next is at local optimum
+//					if (units[next].isLocalOptimum()) {
+//						// if yes, 
+//						//		set own (next) searchstatus to -1
+//						searchStatus[next] = -1;
+//						// 		check if other's search status == -2
+//						if (searchStatus[other] == -2) {
+//							//		if yes, 
+//							//				reset other's search history
+//							units[other].resetHistory();
+//						}
+//					} else {
+//						// if no, 
+//						//		set own (next) search status to 0
+//						searchStatus[next] = 0;
+//					}
+//					
+//				} else { // search was successful and moveTo is the new localLocation for the business unit (DMU) -- business or infosys
+//					if (Globals.debug) { System.out.println("Agile.run(): search successful (moveTo==" + moveTo.toString() + ")"); }
+//					// set Org's location to match moveTo 
+//					updateLocation(moveTo, next);
+//					// update own (next) localLocation
+//					units[next].setLocation(location);
+//					// update other's localLocaiotn
+//					units[other].setLocation(location);
+//					// set own (next) searchstatus to 1
+//					searchStatus[next] = 1;
+//					// reset own (next) searchhistory
+//					units[next].resetHistory();
+//					// reset other's searchhistory
+//					units[other].resetHistory();
+//					// set other's searchstatus to -2;
+//					searchStatus[other] = -2;
+//				}
+//			} else {
+//				completed = true;
+//				// this should never happen --> could not find next move (i.e., both bus and IS are at local optima)
+//			}
+//			lastDMU = next;
+//		}
+//	}
 
 	private int next_old(int last) { 
 		int nextIdx = -1;

@@ -22,13 +22,14 @@ public class Globals {
 	public static int N = 8;
 	private static String outfilename; //= ""; // "results/joint_n16k0_0.txt"
 	private static String influenceMatrixFile = "conf/n16k0.txt";
-	// public static int numOrgs = 100; // number of organizations to create within replication
-	// public static int busOverlap = 0; // number of overlapping elements from IS that business knows 
-	public static int isOverlap = 0; // number of overlapping elements from Bus that IS knows
+	public static int numOrgs = 100; // number of organizations to create within replication
+//	public static int busOverlap = 0; // number of overlapping elements from IS that business knows 
+//	public static int isOverlap = 0; // number of overlapping elements from Bus that IS knows
 	public static String orgType = "agile"; // sequential | iterative | agile | joint
 	public static int numUnits = 2;
 	public static String[] unitNames;
 	public static int[] domainDistributionsCounts;
+	public static String localKnowledgeIndices; // IMPLEMENT IN loadGlobals()
 	// public static int[] kdists;
 	public static boolean authority = false; // whether Bus can change IS or IS can change Bus; no need for now
 	public static int numAlternatives = 1; // processing power; no need for now; 
@@ -71,12 +72,12 @@ public class Globals {
 				} else {
 					out = new PrintWriter(new FileOutputStream(outfilename, true), true);
 				}
-				debugfile = p.getProperty("debugfile");
+//				debugfile = p.getProperty("debugfile");
 				influenceMatrixFile = p.getProperty("influenceMatrix");
 				numOrgs = Integer.parseInt(p.getProperty("numOrgs"));
 //				overlap = Integer.parseInt(p.getProperty("overlap"));
-				busOverlap = Integer.parseInt(p.getProperty("busOverlap"));
-				isOverlap = Integer.parseInt(p.getProperty("isOverlap"));
+//				busOverlap = Integer.parseInt(p.getProperty("busOverlap"));
+//				isOverlap = Integer.parseInt(p.getProperty("isOverlap"));
 				N = Integer.parseInt(p.getProperty("N"));
 				orgType = p.getProperty("orgType");
 				numUnits = Integer.parseInt(p.getProperty("numUnits"));
@@ -88,7 +89,7 @@ public class Globals {
 				// e.g,. domainDistribution=4,8,4 for aaaabbbbbbbbcccc or 10,6 for aaaaaaaaaabbbbbb
 				domainDistributionsCounts = new int[p.getProperty("domainDistribution").split(",").length];
 				for (int i =0; i < p.getProperty("domainDistribution").split(",").length; i++) {
-					domainDistributionCounts[i] = Integer.parseInt(p.getProperty("domainDistribution").split(",")[i]);
+					domainDistributionsCounts[i] = Integer.parseInt(p.getProperty("domainDistribution").split(",")[i]);
 				}
 
 				// String[] kdistributions = p.getProperty("kdistribution").split(",");
@@ -152,8 +153,8 @@ public class Globals {
 		outfilename = "results/default_testing.txt"; 
 		influenceMatrixFile = "conf/n16k7.txt";
 		numOrgs = 1; // number of organizations to create within replication
-		busOverlap = 0; // number of overlapping elements from IS that business knows 
-		isOverlap = 0; // number of overlapping elements from Bus that IS knows
+//		busOverlap = 0; // number of overlapping elements from IS that business knows 
+//		isOverlap = 0; // number of overlapping elements from Bus that IS knows
 		orgType = "agile"; // sequential | iterative | agile | joint
 		numUnits = 2;
 		unitNames[0] = "business"; unitNames[1] = "IS";
@@ -189,12 +190,12 @@ public class Globals {
 		retString += "outfile: " + outfilename + "\n";
 		retString += "rumber of runs: " + numRuns + "\n";
 		retString += "number of organizations: " + numOrgs + "\n";
-		retString += "number of sub-organizations: " + numSubOrgs + "\n";
-		retString += "overlap (bus/IS): " + busOverlap + "/" + isOverlap + "\n";
+		retString += "number of sub-organizations: " + numUnits + "\n";
+//		retString += "overlap (bus/IS): " + busOverlap + "/" + isOverlap + "\n";
 		retString += "outfile: " + outfilename + "\n";
 		retString += "report level: " + reportLevel + "\n";
-		retString += "debug: " + Debug.debugOn() + "\n";
-		retString += "debug out: " + Debug.output() + "\n";
+		retString += "debug: " + Debug.isDebugOn() + "\n";
+		retString += "debug out: " + Debug.getOutFile() + "\n";
 		retString += "------------------\n";
 	// 	public static int[] kdists;
 	// 	public static int numAlternatives;

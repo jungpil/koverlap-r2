@@ -1,6 +1,7 @@
 package obj;
 
 import util.Globals;
+import util.Debug;
 
 public class Location {
 	// vector of design choices -- size should be N (Globals.N)
@@ -137,7 +138,7 @@ public class Location {
 	// random move
 	public void move() {
 		int r = Globals.rand.nextInt(location.length);
-		if (Globals.debug) { System.out.println("position change: " + r);}
+		Debug.println("position change: " + r);
 		if (location[r].equals("0")) {
 			location[r] = "1";
 		} else {

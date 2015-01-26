@@ -95,29 +95,29 @@ public class Agile extends Organization {
 //		}
 //	}
 
-	private int next_old(int last) { 
-		int nextIdx = -1;
-		int other = Math.abs(last - 1);
-
-		if (last == -2) { // simulation hasn't started yet
-			nextIdx = 0; // business should start
-		} else if (last == -1) { // simulation has ended
-			nextIdx = -1;
-		} else { // DMU is still searching
-			if (searchStatus[last] == 0) { 
-				nextIdx = last;
-			} else if (searchStatus[last] == 1) {
-				nextIdx = other;
-			} else if (searchStatus[last] == -1) {
-				if (searchStatus[other] == -1) {
-					nextIdx = -1;
-				} else {
-					nextIdx = other;
-				}
-			}
-		}
-//		System.out.println(t + "\t" + last + "\t" + searchStatus[0] + "\t" + searchStatus[1] + "\t" + nextIdx);
-		return nextIdx;
-	}
+//	private int next_old(int last) { 
+//		int nextIdx = -1;
+//		int other = Math.abs(last - 1);
+//
+//		if (last == -2) { // simulation hasn't started yet
+//			nextIdx = 0; // business should start
+//		} else if (last == -1) { // simulation has ended
+//			nextIdx = -1;
+//		} else { // DMU is still searching
+//			if (searchStatus[last] == 0) { 
+//				nextIdx = last;
+//			} else if (searchStatus[last] == 1) {
+//				nextIdx = other;
+//			} else if (searchStatus[last] == -1) {
+//				if (searchStatus[other] == -1) {
+//					nextIdx = -1;
+//				} else {
+//					nextIdx = other;
+//				}
+//			}
+//		}
+////		System.out.println(t + "\t" + last + "\t" + searchStatus[0] + "\t" + searchStatus[1] + "\t" + nextIdx);
+//		return nextIdx;
+//	}
 	
 }

@@ -3,6 +3,7 @@ package obj;
 import java.util.Collections;
 import java.util.Vector;
 import java.util.Set;
+import java.util.HashSet;
 import java.util.ArrayList;
 import java.util.List;
 import util.Globals;
@@ -20,7 +21,7 @@ public class Unit {
 	 * withinDomainOthersKnowledge  - what other units know of my own domain;
 	 **/
 	private boolean[] domain;
-	private boolean[] fullKnowledge[];
+	private boolean[] fullKnowledge;
 	private boolean[] withinDomainOwnKnowledge;
 	private boolean[] outsideDomainOwnKnowledge;
 	private int[] withinDomainOthersKnowledge;
@@ -32,8 +33,8 @@ public class Unit {
 	//private int knowledgeSize = 0;
 
 	// private int overlapIndex[] = new int[Globals.busOverlap];
-	private int localKnowledgeIndex[]; 
-	private int knowledgeOverlapIndex[];
+//	private int localKnowledgeIndex[]; 
+//	private int knowledgeOverlapIndex[];
 	private Location moveTo;
 	private boolean move; // if unit's decision is to move to new location, set this to true
 
@@ -66,7 +67,7 @@ public class Unit {
 		// set neighbors for current location (init); @note: no need to save location; only need location info to set neighbors
 		resetSearchHistory(loc); // initialize nieghbor vector and sets neighbors
 
-		Debug.println("Unit " + idx + " (" + name + ") initiated with location " + loc.toStrin() 
+		Debug.println("Unit " + idx + " (" + name + ") initiated with location " + loc.toString() 
 								+ ", withinDomainOwnKnowledge " + Debug.arrayToString(withinDomainOwnKnowledge) 
 								+ ", outsideDomainOwnKnowledge " + Debug.arrayToString(outsideDomainOwnKnowledge) 
 								+ ", withinDomainOthersKnowledge " + Debug.arrayToString(withinDomainOthersKnowledge) 
@@ -157,7 +158,7 @@ public class Unit {
 		// } else if (Globals.neighborSelectionApproach.equals("cross")) {
 
 		// }
-		Location neighbor = (Location)neighbors.remove(Globals.rand.nextInt(neighbors.size()));
+		return (Location)neighbors.remove(Globals.rand.nextInt(neighbors.size()));
 	}
 
 	private void setDomain(int[] domainDistributionCnts) {
@@ -265,7 +266,7 @@ public class Unit {
 		}
 		// 2. distinguish between own and others' knowledge
 		for (int i = 0; i < fullKnowledge.length; i++) {
-			if (fullKnoweldge[i]) { // if unit "knows"
+			if (fullKnowledge[i]) { // if unit "knows"
 				if (domain[i]) { // if within unit's own domain 
 					withinDomainOwnKnowledge[i] = true;
 				} else { // if outside of unit's own domain 
@@ -362,14 +363,14 @@ public class Unit {
 		// then neighborIndexCombinations = [[], [0], [1], [2], [3], [6], [0,1], [0,2], [0,3], [0,6], [1,2], [1,3], [1,6], [2,3], [2,6], [3,6]]; 
 		Set<Set<Integer>> ownNeighborIndexCombinations = getCombinationsFor(ownNeighborCombinationKnowledgeIndices, maxDistance);
 
-		if ((Globals.neighborSelectionApproach.equals("myknowledge")) || Globals.neighborSelectionApproach.equals("cross")) { // option 2 or 4
-			// get the combination of knowledge combinations for max distance for shared knowledge in other's domain
+//		if ((Globals.neighborSelectionApproach.equals("myknowledge")) || Globals.neighborSelectionApproach.equals("cross")) { // option 2 or 4
+//			// get the combination of knowledge combinations for max distance for shared knowledge in other's domain
 			List<Integer> othersNeighborCombinationKnowledgeIndices = new ArrayList<Integer>();
 			for (int i = 0; i < outsideDomainOwnKnowledge.length; i++) {
 				if (outsideDomainOwnKnowledge[i]) othersNeighborCombinationKnowledgeIndices.add(i);
 			}
 			Set<Set<Integer>> othersNeighborIndexCombinations = getCombinationsFor(othersNeighborCombinationKnowledgeIndices, othersNeighborCombinationKnowledgeIndices.size());
-		}
+//		}
 
 		for (Set<Integer> combo : ownNeighborIndexCombinations) {
 			if (combo.isEmpty()) {
@@ -397,7 +398,7 @@ public class Unit {
 				}
 	
 				neighbors.add(new Location(neighborLocString));
-				Globals.debug.println("add neighbor: " + Globals.arrayToString(neighborLocString));
+				Debug.println("add neighbor: " + Debug.arrayToString(neighborLocString));
 				// neighbors.add(new Neighbor(neighborLocString, loc.getLocation(), weight));
 			}
 		}
@@ -410,7 +411,7 @@ public class Unit {
 		} else if (value.equals("1")) {
 			return "0"; 
 		} else {
-			Globals.debug.println("cannot flip empty value");
+			Debug.println("cannot flip empty value");
 			return " ";
 		}
 	}
@@ -446,7 +447,7 @@ public class Unit {
 
 	private void resetSearchHistory(Location loc) {
 		neighbors = new Vector<Location>();
-		setNeighbors(loc, Globals.numAlternative);
+		setNeighbors(loc, Globals.numAlternatives);
 	}
 
 }

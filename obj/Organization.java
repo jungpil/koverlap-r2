@@ -113,7 +113,7 @@ public class Organization {
 //	}
 		
 	// PRINTERS
-//	public void printDetails(int period) {
+	public void printDetails(int period) {
 //		double globalFitness = Globals.landscape.getFitness(location);
 //		double[] localFitness = new double[Globals.numUnits];
 //		for (int i = 0; i < Globals.numUnits; i++) {
@@ -134,7 +134,7 @@ public class Organization {
 //				lastPrinted = true;
 //			}
 //		}
-//	}
+	}
 	
 	public Unit getUnit(int i) {
 		return units[i];

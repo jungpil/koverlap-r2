@@ -191,50 +191,75 @@ public class Unit {
 		// init selectionProbabilities array to fit neighbor vector size (to account for previously visited/discarded locations)
 		selectionProbabilities = new double[neighbors.size()];
 
-		// ACTUALLY DON'T DO IT HERE.  WE NEED TO DO IT WHEN SETTING THE WEIGHTS 
 		// we could combine random + myknowledge and othersknowledge + cross but since these may change, let's keep them separate for now
+		// ACTUALLY DON'T DO IT HERE.  WE NEED TO DO IT WHEN SETTING THE WEIGHTS 
 		if (Globals.neighborSelectionApproach.equals("random")) { // option 0
 			// pick random neighbor from neighbor set and return
-			for (int i = 0; i < selectionProbabilities.length; i++) selectionProbabilities[i] = 1d / selectionProbabilities.length;
+			selectionProbabilities[0] = 1d / neighbors.size();
+			for (int i = 1; i < selectionProbabilities.length - 1; i++) {
+				selectionProbabilities[i] = selectionProbabilities[i-1] + (1d / neighbors.size());
+			}
+			selectionProbabilities[selectionProbabilities.length - 1] = 1d;  // no need; init will set it to 
 		} else if (Globals.neighborSelectionApproach.equals("myknowledge")) { // option 2
 			// also consider neighbors that alter what the focal unit knows (setNeighbors must change!!)
-			for (int i = 0; i < selectionProbabilities.length; i++) selectionProbabilities[i] = 1d / selectionProbabilities.length;
+			selectionProbabilities[0] = 1d / neighbors.size();
+			for (int i = 1; i < selectionProbabilities.length - 1; i++) {
+				selectionProbabilities[i] = selectionProbabilities[i-1] + (1d / neighbors.size());
+			}
+			selectionProbabilities[selectionProbabilities.length - 1] = 1d;  // no need; init will set it to 
 		} else if (Globals.neighborSelectionApproach.equals("othersknowledge")) { // option 1
 			// give preferential weight to other units' knowledge of my domain
 			// check neighbors diff with current location and 
-
-			for (int i = 0; i < neighbors.size(); i++) {
+			double[] diffAtOthersSharedKnowledge = new double[neighbors.size()];
+			for (int i = 0; i < diffAtOthersSharedKnowledge.length; i++) diffAtOthersSharedKnowledge[i] = 1d; // init to 1
+			for (int i = 0; i < neighbors.size(); i++) { // loop through neighbors
 				Location nb = (Location)neighbors.get(i);
-				int[] countDiff = new int[Globals.N];
-				for (int j = 0; j < countDiff.length; j++) countDiff[j] = 1; // initialize with default value = 1
-
 				// need to find neighbor which has different value (from current location) for elements 
 				for (int j = 0; j < Globals.N; j++) {
 					if (!nb.getLocationAt(j).equals(loc.getLocationAt(j))) { // element index
 						if (withinDomainOthersKnowledge[j] > 0) { // some other unit knows this element
-							countDiff[j] *= withinDomainOthersKnowledge[j] * Globals.preferentialWeightage;
+							diffAtOthersSharedKnowledge[i] = Globals.preferentialWeightage; 
 						} // else { countDiff[j] = 1; } // if other unit does not know this element j
 					} // else { countDiff[j] = 1; } if value of this element for considered neighbor is the same as current location value for this element
 				}
+				// now that we've identified whether this neighbor 
 			}
+			double sumWeights = 0d;
+			for (int i = 0; i < diffAtOthersSharedKnowledge.length; i++) {
+				sumWeights += diffAtOthersSharedKnowledge[i];
+			}
+			selectionProbabilities[0] = diffAtOthersSharedKnowledge[0] / sumWeights;
+			for (int i = 1; i < selectionProbabilities.length - 1; i++) {
+				selectionProbabilities[i] = selectionProbabilities[i-1] + (diffAtOthersSharedKnowledge[i] / sumWeights);
+			}
+			selectionProbabilities[selectionProbabilities.length - 1] = 1d;  // no need; init will set it to 
 		} else if (Globals.neighborSelectionApproach.equals("cross")) { // option 4
 			// give preferential weight to other units' knowledge of my domain
-			// check neighbors diff with current location and 
-
-			for (int i = 0; i < neighbors.size(); i++) {
+			// check neighbors diff with current location and  
+			// also consider neighbors that alter what the focal unit knows (setNeighbors must change!!)
+			double[] diffAtOthersSharedKnowledge = new double[neighbors.size()];
+			for (int i = 0; i < diffAtOthersSharedKnowledge.length; i++) diffAtOthersSharedKnowledge[i] = 1d; // init to 1
+			for (int i = 0; i < neighbors.size(); i++) { // loop through neighbors
 				Location nb = (Location)neighbors.get(i);
-				int[] countDiff = new int[Globals.N];
-				for (int j = 0; j < countDiff.length; j++) countDiff[j] = 1; // initialize with default value = 1
-
 				// need to find neighbor which has different value (from current location) for elements 
 				for (int j = 0; j < Globals.N; j++) {
 					if (!nb.getLocationAt(j).equals(loc.getLocationAt(j))) { // element index
 						if (withinDomainOthersKnowledge[j] > 0) { // some other unit knows this element
-							countDiff[j] *= withinDomainOthersKnowledge[j] * Globals.preferentialWeightage;
+							diffAtOthersSharedKnowledge[i] = Globals.preferentialWeightage; 
 						} // else { countDiff[j] = 1; } // if other unit does not know this element j
 					} // else { countDiff[j] = 1; } if value of this element for considered neighbor is the same as current location value for this element
 				}
+				// now that we've identified whether this neighbor 
 			}
+			double sumWeights = 0d;
+			for (int i = 0; i < diffAtOthersSharedKnowledge.length; i++) {
+				sumWeights += diffAtOthersSharedKnowledge[i];
+			}
+			selectionProbabilities[0] = diffAtOthersSharedKnowledge[0] / sumWeights;
+			for (int i = 1; i < selectionProbabilities.length - 1; i++) {
+				selectionProbabilities[i] = selectionProbabilities[i-1] + (diffAtOthersSharedKnowledge[i] / sumWeights);
+			}
+			selectionProbabilities[selectionProbabilities.length - 1] = 1d;  // no need; init will set it to 
 		}
 	}
 
@@ -350,6 +375,18 @@ public class Unit {
 	 *  Note: ownKnowledge is used as mask for neighbors
 	 */
 	private void setNeighbors(Location loc, int maxDistance) {
+		
+		
+		// implementation neighbor selection 
+		// Globals.neighborSelectionApproach = {"random", "myknowledge", "othersknowledge", "cross"}
+		// 1. random - pick a random neighbor; neighbors only perturb within domain elements
+		// 2. myknowledge - pick a random neighbor; neighbor set also includes perturbations of other domain elements if focal unit has shared knowledge 
+		//                  -> if I know, then I can consider implications of those changes as well
+		// 3. othersknowledge - give preferential weight (weighted probability by Globals.preferenceWeightages) for elements within my domain for which other units have shared knowledge
+		//                     -> if other unit knows an element, then focus on setting that first; neighbor set is same as random
+		// 4. cross - combination of myknowledge and othersknowledge - preferential weightage + expanded neighborset
+
+		
 		// get the combination of knowledge combinations for max distance for own knowledge
 		List<Integer> ownNeighborCombinationKnowledgeIndices = new ArrayList<Integer>();
 		for (int i = 0; i < withinDomainOwnKnowledge.length; i++) {

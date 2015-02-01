@@ -333,41 +333,6 @@ public class Unit {
 			return false;
 		}
 	}
-	private void setNeighbors(Location loc) {
-		for (int i = 0; i < Globals.N; i++) {
-			String[] strNeighborLocation = new String[Globals.N];
-			boolean add = false;
-			for (int j = 0; j < Globals.N; j++) {
-				if (i == j) { // for focal di
-					// which are the blank ones?  knowledge? => cannot use localLoc, we're using globalLoc
-
-				}
-			}
-		}
-	}
-
-//	private void setNeighbors() {
-//		for (int i = 0; i < Globals.N; i++) {
-//			String[] neighborLocString = new String[Globals.N];
-//			boolean add = false;
-//			for (int j = 0; j < Globals.N; j++) {
-//				if (i == j) {
-//					if (localLoc.getLocationAt(j).equals("1")) {
-//						neighborLocString[j] = "0"; add = true;
-//					} else if (localLoc.getLocationAt(j).equals("0")) {
-//						neighborLocString[j] = "1"; add = true;
-//					} // else locationAt is blank so do nothing
-//				} else { // all other i != j
-//					neighborLocString[j] = localLoc.getLocationAt(j);
-//				}
-//			}
-//			if (add) { neighbors.add(new Location(neighborLocString)); }
-//		}
-//		//Collections.shuffle(neighbors);  // shuffle so that order of retrieval is randomized
-//		
-//		Debug.println("Neighbors for " + unitName); 
-//		printNeighbors(); 
-//	}
 
 	/**
 	 *  For a given location and maxDistance, fill neighbor vector with neighbors of variations in "maxDistance" elements
@@ -375,8 +340,6 @@ public class Unit {
 	 *  Note: ownKnowledge is used as mask for neighbors
 	 */
 	private void setNeighbors(Location loc, int maxDistance) {
-		
-		
 		// implementation neighbor selection 
 		// Globals.neighborSelectionApproach = {"random", "myknowledge", "othersknowledge", "cross"}
 		// 1. random - pick a random neighbor; neighbors only perturb within domain elements
@@ -386,60 +349,119 @@ public class Unit {
 		//                     -> if other unit knows an element, then focus on setting that first; neighbor set is same as random
 		// 4. cross - combination of myknowledge and othersknowledge - preferential weightage + expanded neighborset
 
-		
-		// get the combination of knowledge combinations for max distance for own knowledge
-		List<Integer> ownNeighborCombinationKnowledgeIndices = new ArrayList<Integer>();
-		for (int i = 0; i < withinDomainOwnKnowledge.length; i++) {
-			if (withinDomainOwnKnowledge[i]) ownNeighborCombinationKnowledgeIndices.add(i);
-		}
+		if (Globals.neighborSelectionApproach.equals("random")) { // option 0
+			List<Integer> ownNeighborCombinationKnowledgeIndices = new ArrayList<Integer>();
+			for (int i = 0; i < withinDomainOwnKnowledge.length; i++) {
+				if (withinDomainOwnKnowledge[i]) ownNeighborCombinationKnowledgeIndices.add(i);
+			}
+			// get all of the combinations 
+			// e.g., if withinDomainOwnKnowledge = [t, t, t, t, f, f, t, f] and maxDistance = 1
+			// then neighborIndexCombinations = [[], [0], [1], [2], [3], [6]]; NOTE the empty one (always returned)
+			// if maxDistance = 2
+			// then neighborIndexCombinations = [[], [0], [1], [2], [3], [6], [0,1], [0,2], [0,3], [0,6], [1,2], [1,3], [1,6], [2,3], [2,6], [3,6]]; 
+			Set<Set<Integer>> ownNeighborIndexCombinations = getCombinationsFor(ownNeighborCombinationKnowledgeIndices, maxDistance);
 
-		// get all of the combinations 
-		// e.g., if withinDomainOwnKnowledge = [t, t, t, t, f, f, t, f] and maxDistance = 1
-		// then neighborIndexCombinations = [[], [0], [1], [2], [3], [6]]; NOTE the empty one (always returned)
-		// if maxDistance = 2
-		// then neighborIndexCombinations = [[], [0], [1], [2], [3], [6], [0,1], [0,2], [0,3], [0,6], [1,2], [1,3], [1,6], [2,3], [2,6], [3,6]]; 
-		Set<Set<Integer>> ownNeighborIndexCombinations = getCombinationsFor(ownNeighborCombinationKnowledgeIndices, maxDistance);
+			for (Set<Integer> combo : ownNeighborIndexCombinations) {
+				if (!combo.isEmpty()) {
+					String[] neighborLocString = loc.getLocation();
+					for (Integer comboInt : combo) { // loop through each Int in neighborCombination
+						neighborLocString[comboInt] = flip(neighborLocString[comboInt]);
+					}
+					neighbors.add(new Location(neighborLocString));
+					Debug.println("add neighbor: " + Debug.arrayToString(neighborLocString));
+				}
+			}
 
-//		if ((Globals.neighborSelectionApproach.equals("myknowledge")) || Globals.neighborSelectionApproach.equals("cross")) { // option 2 or 4
-//			// get the combination of knowledge combinations for max distance for shared knowledge in other's domain
+		} else if (Globals.neighborSelectionApproach.equals("myknowledge")) { // option 2
+			Vector<Location> tempNeighbors = new Vector<Location>();
+			List<Integer> ownNeighborCombinationKnowledgeIndices = new ArrayList<Integer>();
+			for (int i = 0; i < withinDomainOwnKnowledge.length; i++) {
+				if (withinDomainOwnKnowledge[i]) ownNeighborCombinationKnowledgeIndices.add(i);
+			}
+			Set<Set<Integer>> ownNeighborIndexCombinations = getCombinationsFor(ownNeighborCombinationKnowledgeIndices, maxDistance);
+			for (Set<Integer> combo : ownNeighborIndexCombinations) {
+				if (!combo.isEmpty()) {
+					String[] neighborLocString = loc.getLocation();
+					for (Integer comboInt : combo) { // loop through each Int in neighborCombination
+						neighborLocString[comboInt] = flip(neighborLocString[comboInt]);
+					}
+					tempNeighbors.add(new Location(neighborLocString));
+					Debug.println("add tempNeighbor: " + Debug.arrayToString(neighborLocString));
+				}
+			}
 			List<Integer> othersNeighborCombinationKnowledgeIndices = new ArrayList<Integer>();
 			for (int i = 0; i < outsideDomainOwnKnowledge.length; i++) {
 				if (outsideDomainOwnKnowledge[i]) othersNeighborCombinationKnowledgeIndices.add(i);
 			}
 			Set<Set<Integer>> othersNeighborIndexCombinations = getCombinationsFor(othersNeighborCombinationKnowledgeIndices, othersNeighborCombinationKnowledgeIndices.size());
-//		}
-
-		for (Set<Integer> combo : ownNeighborIndexCombinations) {
-			if (combo.isEmpty()) {
-				// System.out.println("empty");
-				// do nothing, there is always one empty one that is returned -> ignore
-			} else {
-				String[] neighborLocString = loc.getLocation();
-
-				for (Integer comboInt : combo) { // loop through each Int in neighborCombination
-					neighborLocString[comboInt] = flip(neighborLocString[comboInt]);
-					if (othersKnowledge[comboInt]) { // if shared knowledge (if I know the other unit's knowledge)
-													 // think about incorporating what the unit knows about what the other unit knows (DIFFICULT)
-						//weight += Globals.sharedKnowledgePreferenceWeight;
-					}
-				}
-
-				if ((Globals.neighborSelectionApproach.equals("myknowledge")) || Globals.neighborSelectionApproach.equals("cross")) { // option 2 or 4
-					for (Set<Integer> sharedCombo : othersNeighborIndexCombinations) {
-						if (!sharedCombo.isEmpty()) {
-							for (Integer sharedComboInt : sharedCombo) {
-								neighborLocString[sharedComboInt] = flip(neighborLocString[sharedComboInt]);
-							}
+			for (Set<Integer> sharedCombo : othersNeighborIndexCombinations) {
+				if (!sharedCombo.isEmpty()) {
+					for (Location tempNeighbor : tempNeighbors) {
+						String[] neighborLocString = tempNeighbor.getLocation();
+						neighbors.add(new Location(neighborLocString)); // add original in temp
+						Debug.println("add neighbor: " + Debug.arrayToString(neighborLocString));
+						for (Integer sharedComboInt : sharedCombo) {
+							neighborLocString[sharedComboInt] = flip(neighborLocString[sharedComboInt]);
 						}
+						neighbors.add(new Location(neighborLocString)); // add modified 
+						Debug.println("add neighbor: " + Debug.arrayToString(neighborLocString));
 					}
 				}
-	
-				neighbors.add(new Location(neighborLocString));
-				Debug.println("add neighbor: " + Debug.arrayToString(neighborLocString));
-				// neighbors.add(new Neighbor(neighborLocString, loc.getLocation(), weight));
+			}	
+		} else if (Globals.neighborSelectionApproach.equals("othersknowledge")) { // option 1
+			List<Integer> ownNeighborCombinationKnowledgeIndices = new ArrayList<Integer>();
+			for (int i = 0; i < withinDomainOwnKnowledge.length; i++) {
+				if (withinDomainOwnKnowledge[i]) ownNeighborCombinationKnowledgeIndices.add(i);
+			}
+			Set<Set<Integer>> ownNeighborIndexCombinations = getCombinationsFor(ownNeighborCombinationKnowledgeIndices, maxDistance);
+			for (Set<Integer> combo : ownNeighborIndexCombinations) {
+				if (!combo.isEmpty()) {
+					String[] neighborLocString = loc.getLocation();
+					for (Integer comboInt : combo) { // loop through each Int in neighborCombination
+						neighborLocString[comboInt] = flip(neighborLocString[comboInt]);
+					}
+					neighbors.add(new Location(neighborLocString));
+					Debug.println("add neighbor: " + Debug.arrayToString(neighborLocString));
+				}
+			}
+			
+		} else if (Globals.neighborSelectionApproach.equals("cross")) { // option 4
+			Vector<Location> tempNeighbors = new Vector<Location>();
+			List<Integer> ownNeighborCombinationKnowledgeIndices = new ArrayList<Integer>();
+			for (int i = 0; i < withinDomainOwnKnowledge.length; i++) {
+				if (withinDomainOwnKnowledge[i]) ownNeighborCombinationKnowledgeIndices.add(i);
+			}
+			Set<Set<Integer>> ownNeighborIndexCombinations = getCombinationsFor(ownNeighborCombinationKnowledgeIndices, maxDistance);
+			for (Set<Integer> combo : ownNeighborIndexCombinations) {
+				if (!combo.isEmpty()) {
+					String[] neighborLocString = loc.getLocation();
+					for (Integer comboInt : combo) { // loop through each Int in neighborCombination
+						neighborLocString[comboInt] = flip(neighborLocString[comboInt]);
+					}
+					tempNeighbors.add(new Location(neighborLocString));
+					Debug.println("add tempNeighbor: " + Debug.arrayToString(neighborLocString));
+				}
+			}
+			List<Integer> othersNeighborCombinationKnowledgeIndices = new ArrayList<Integer>();
+			for (int i = 0; i < outsideDomainOwnKnowledge.length; i++) {
+				if (outsideDomainOwnKnowledge[i]) othersNeighborCombinationKnowledgeIndices.add(i);
+			}
+			Set<Set<Integer>> othersNeighborIndexCombinations = getCombinationsFor(othersNeighborCombinationKnowledgeIndices, othersNeighborCombinationKnowledgeIndices.size());
+			for (Set<Integer> sharedCombo : othersNeighborIndexCombinations) {
+				if (!sharedCombo.isEmpty()) {
+					for (Location tempNeighbor : tempNeighbors) {
+						String[] neighborLocString = tempNeighbor.getLocation();
+						neighbors.add(new Location(neighborLocString)); // add original in temp
+						Debug.println("add neighbor: " + Debug.arrayToString(neighborLocString));
+						for (Integer sharedComboInt : sharedCombo) {
+							neighborLocString[sharedComboInt] = flip(neighborLocString[sharedComboInt]);
+						}
+						neighbors.add(new Location(neighborLocString)); // add modified 
+						Debug.println("add neighbor: " + Debug.arrayToString(neighborLocString));
+					}
+				}
 			}
 		}
-		
 	}
 	
 	private String flip(String value) {

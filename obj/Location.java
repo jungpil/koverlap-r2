@@ -39,11 +39,14 @@ public class Location {
 	}
 	
 	public String[] getLocation() {
-		return location;
+		String[] retStringArray = new String[location.length];
+		for (int i = 0; i < retStringArray.length; i++) retStringArray[i] = location[i];
+		return retStringArray;
 	}
 	
 	public String getLocationAt(int index) {
-		return location[index]; 
+		String retString = location[index];
+		return retString; 
 	}
 	
 	// sets changes the location to new location

@@ -22,7 +22,7 @@ public class Organization {
 	protected int lastSearchingUnitIdx = -1;
 	protected int next = -1; // focal DMU (whose turn is it to search)?
 	protected boolean lastPrinted = false;
-
+	protected int cumNoMoves = 0;
 
 	public Organization(int idx) {
 		index = idx;
@@ -63,8 +63,6 @@ public class Organization {
 		// have unit submit recommendation
 		// action -> move or stay
 
-
-
 	} // implemented by subclasses
 	
 	protected int determineFocalUnitIdx() {
@@ -79,11 +77,14 @@ public class Organization {
 		try { // arrayIndexOutOfBounds Exception since lastSearchingUnitIdx initialized to -1
 			if (units[lastSearchingUnitIdx].decisionIsMove()) { // last unit moved
 				idx = (lastSearchingUnitIdx+1) % units.length; // modulus loops back to 0
+				cumNoMoves = 0;
 			} else { // last unit couldn't move
 				if (units[lastSearchingUnitIdx].hasNeighbors()) { // still has neighbors
 					idx = lastSearchingUnitIdx;
 				} else { // no more neighbors
 					idx = (lastSearchingUnitIdx+1) % units.length; // modulus loops back to 0
+					cumNoMoves++;
+					if (cumNoMoves == Globals.numUnits) completed = true;
 				}
 			}
 		} catch (ArrayIndexOutOfBoundsException e) {
@@ -142,7 +143,7 @@ public class Organization {
 	
 	public void printUnitNeighbors(int i) {
 		System.out.println("unit: " + i);
-		units[i].printAllNeighbors();
+		units[i].printAllNeighbors(location);
 	}
 	
 	public void printLocation() {

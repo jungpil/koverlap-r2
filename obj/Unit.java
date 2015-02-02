@@ -54,8 +54,8 @@ public class Unit {
 	 *						  domain knowledge; this is used to pick 
 	 * called by Organization: units[i] = new Unit(i, Globals.unitNames[i], Globals.domainDistributionCounts, Globals.localKnowledgeIndices, Globals.knowledgeOverlapIndex[i]);
 	 **/
-	//public Unit(int idx, String name, int[] domainDistributionCnts, String knowledgeIdxs, int knowledgeOverlapSize) {
 	public Unit(int idx, String name, Location loc, int[] domainDistributionCnts, String knowledgeIdxs) {
+		//public Unit(int idx, String name, int[] domainDistributionCnts, String knowledgeIdxs, int knowledgeOverlapSize) {
 		// set unit index and name
 		index = idx;
 		unitName = name;
@@ -81,8 +81,42 @@ public class Unit {
 		// resetSearchHistory();
 		// if (Globals.debug) { System.out.println("reset search history for infoSys"); }
 		*/
-		
 	}
+
+	/**** ACCESSORS ****/
+	// get own knowledge size -- how many elements the unit knows within own domain
+	public int getWithinDomainOwnKnowledgeSize() {
+		int count = 0;
+		for (boolean boolValue : withinDomainOwnKnowledge) if (boolValue) count++;
+		return count;
+	}
+
+	// get overlapping knowledge size -- how many elements the unit knows outside own domain
+	public int getOutsideDomainOwnKnowledge() {
+		int count = 0;
+		for (boolean boolValue : outsideDomainOwnKnowledge) if (boolValue) count++;
+		return count;
+	}
+
+	// get full knowledge size -- how many elements the unit knows altogether
+	public int getFullKnowledgeSize() {
+		int count = 0;
+		for (boolean boolValue : fullKnowledge) if (boolValue) count++;
+		return count;
+	}
+
+	public boolean decisionIsMove() {
+		return move;
+	}
+
+	public boolean hasNeighbors() {
+		if (neighbors.size() > 0) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 
 	public Location getRecommendation(Location loc) {
 		// need to take care of 2 situations: experiential search vs. comprehensive search
@@ -143,6 +177,7 @@ public class Unit {
 
 	}
 
+	/*
 	private Location pickNeighbor() {
 		// implement neighbor selection method here
 		// Globals.neighborSelectionApproach = {"random", "myknowledge", "othersknowledge", "cross"}
@@ -160,23 +195,7 @@ public class Unit {
 		// }
 		return (Location)neighbors.remove(Globals.rand.nextInt(neighbors.size()));
 	}
-
-	private void setDomain(int[] domainDistributionCnts) {
-		// set control domain; e.g., domainDistributionCnts = [4,8,4] 
-		// => e.g., domain[] for unit1 = [t,t,t,t,f,f,f,f,f,f,f,f,f,f,f,f] for unit2 = [f,f,f,f,t,t,t,t,t,t,t,t,f,f,f,f]
-		domain = new boolean[Globals.N]; // initialized to all false 
-		int tmpStart = 0;
-		for (int i = 0; i < domainDistributionCnts.length; i++) {
-			if (index == i) {
-				for (int j = tmpStart; j < tmpStart + domainDistributionCnts[i]; j++) {
-					domain[j] = true;
-				}
-			} else {
-				tmpStart += domainDistributionCnts[i];
-			}
-		}
-	}
-
+	*/
 
 	private void setNeighborSelectionProbabilities(Location loc) {
 		// implementation neighbor selection probability computation
@@ -263,76 +282,6 @@ public class Unit {
 		}
 	}
 
-
-	//knoweldgeIdxs = "1,1,0,0,0,0;0,0,1,1,0,0;0,0,0,0,1,1" -> [[1,1,0,0,0,0],[0,0,1,1,0,0],[0,0,0,0,1,1]]
-	private void setKnowledges(String knowledgeIdxs) {
-		// note: setDomain(domainDistributionCounts) must be completed before this method -> domain[] has to be set 
-		// done in Constructor 
-		fullKnowledge = new boolean[Globals.N]; // initialized to all false 
-		withinDomainOwnKnowledge = new boolean[Globals.N]; // initialized to all false 
-		outsideDomainOwnKnowledge = new boolean[Globals.N]; // initialized to all false 
-		withinDomainOthersKnowledge = new int[Globals.N]; // innitialize to all zero (0)
-
-		// 1.  set fullKnowledge[] -- what the unit knows including overlapping knowledge of others' domains
-		for (int i = 0; i < knowledgeIdxs.split(";").length; i++) {
-			if (index == i) { // for focal unit
-				for (int j = 0; j < knowledgeIdxs.split(";")[i].split(",").length; j++) {
-					if (knowledgeIdxs.split(";")[i].split(",")[j].equals("1")) {
-						fullKnowledge[j] = true;
-					}
-				}
-			} else { // for other units
-				for (int j = 0; j < knowledgeIdxs.split(";")[i].split(",").length; j++) {
-					if (knowledgeIdxs.split(";")[i].split(",")[j].equals("1")) {
-						if (domain[j]) withinDomainOthersKnowledge[j]++;
-					}
-				}
-			}
-		}
-		// 2. distinguish between own and others' knowledge
-		for (int i = 0; i < fullKnowledge.length; i++) {
-			if (fullKnowledge[i]) { // if unit "knows"
-				if (domain[i]) { // if within unit's own domain 
-					withinDomainOwnKnowledge[i] = true;
-				} else { // if outside of unit's own domain 
-					outsideDomainOwnKnowledge[i] = true;
-				}
-			}
-		}
-	}
-
-	// get own knowledge size -- how many elements the unit knows within own domain
-	public int getWithinDomainOwnKnowledgeSize() {
-		int count = 0;
-		for (boolean boolValue : withinDomainOwnKnowledge) if (boolValue) count++;
-		return count;
-	}
-
-	// get overlapping knowledge size -- how many elements the unit knows outside own domain
-	public int getOutsideDomainOwnKnowledge() {
-		int count = 0;
-		for (boolean boolValue : outsideDomainOwnKnowledge) if (boolValue) count++;
-		return count;
-	}
-
-	// get full knowledge size -- how many elements the unit knows altogether
-	public int getFullKnowledgeSize() {
-		int count = 0;
-		for (boolean boolValue : fullKnowledge) if (boolValue) count++;
-		return count;
-	}
-
-	public boolean decisionIsMove() {
-		return move;
-	}
-
-	public boolean hasNeighbors() {
-		if (neighbors.size() > 0) {
-			return true;
-		} else {
-			return false;
-		}
-	}
 
 	/**
 	 *  For a given location and maxDistance, fill neighbor vector with neighbors of variations in "maxDistance" elements
@@ -464,21 +413,38 @@ public class Unit {
 		}
 	}
 	
-	private String flip(String value) {
-		if (value.equals("0")) {
-			return "1"; 
-		} else if (value.equals("1")) {
-			return "0"; 
-		} else {
-			Debug.println("cannot flip empty value");
-			return " ";
+	public String printAllNeighbors(Location loc) {
+		String retString = "printAllNeighbors: " + loc.toString() + "\n";
+		for (int i = 0; i < neighbors.size(); i++) {
+			retString += i + ": " + ((Location)neighbors.get(i)).toString() + ": " + selectionProbabilities[i] + "\n";
+		}
+		return retString;
+	}
+	
+
+	private void resetSearchHistory(Location loc) {
+		neighbors = new Vector<Location>();
+		setNeighbors(loc, Globals.numAlternatives);
+	}
+	
+	private void setDomain(int[] domainDistributionCnts) {
+		// set control domain; e.g., domainDistributionCnts = [4,8,4] 
+		// => e.g., domain[] for unit1 = [t,t,t,t,f,f,f,f,f,f,f,f,f,f,f,f] for unit2 = [f,f,f,f,t,t,t,t,t,t,t,t,f,f,f,f]
+		domain = new boolean[Globals.N]; // initialized to all false 
+		int tmpStart = 0;
+		for (int i = 0; i < domainDistributionCnts.length; i++) {
+			if (index == i) {
+				for (int j = tmpStart; j < tmpStart + domainDistributionCnts[i]; j++) {
+					domain[j] = true;
+				}
+			} else {
+				tmpStart += domainDistributionCnts[i];
+			}
 		}
 	}
 
-	public void printAllNeighbors() {
-		
-	}
-	
+
+	/* private utils */
 	private Set<Set<Integer>> getCombinationsFor(List<Integer> group, int subsetSize) {
     	Set<Set<Integer>> resultingCombinations = new HashSet<Set<Integer>> ();
     	int totalSize=group.size();
@@ -503,10 +469,54 @@ public class Unit {
     	} 
     	return resultingCombinations;
 	}
+	
+	private void setKnowledges(String knowledgeIdxs) {
+		// @params: knoweldgeIdxs = "1,1,0,0,0,0;0,0,1,1,0,0;0,0,0,0,1,1" -> [[1,1,0,0,0,0],[0,0,1,1,0,0],[0,0,0,0,1,1]]
+		// note: setDomain(domainDistributionCounts) must be completed before this method -> domain[] has to be set 
+		// done in Constructor 
+		fullKnowledge = new boolean[Globals.N]; // initialized to all false 
+		withinDomainOwnKnowledge = new boolean[Globals.N]; // initialized to all false 
+		outsideDomainOwnKnowledge = new boolean[Globals.N]; // initialized to all false 
+		withinDomainOthersKnowledge = new int[Globals.N]; // innitialize to all zero (0)
 
-	private void resetSearchHistory(Location loc) {
-		neighbors = new Vector<Location>();
-		setNeighbors(loc, Globals.numAlternatives);
+		// 1.  set fullKnowledge[] -- what the unit knows including overlapping knowledge of others' domains
+		for (int i = 0; i < knowledgeIdxs.split(";").length; i++) {
+			if (index == i) { // for focal unit
+				for (int j = 0; j < knowledgeIdxs.split(";")[i].split(",").length; j++) {
+					if (knowledgeIdxs.split(";")[i].split(",")[j].equals("1")) {
+						fullKnowledge[j] = true;
+					}
+				}
+			} else { // for other units
+				for (int j = 0; j < knowledgeIdxs.split(";")[i].split(",").length; j++) {
+					if (knowledgeIdxs.split(";")[i].split(",")[j].equals("1")) {
+						if (domain[j]) withinDomainOthersKnowledge[j]++;
+					}
+				}
+			}
+		}
+		// 2. distinguish between own and others' knowledge
+		for (int i = 0; i < fullKnowledge.length; i++) {
+			if (fullKnowledge[i]) { // if unit "knows"
+				if (domain[i]) { // if within unit's own domain 
+					withinDomainOwnKnowledge[i] = true;
+				} else { // if outside of unit's own domain 
+					outsideDomainOwnKnowledge[i] = true;
+				}
+			}
+		}
 	}
+
+	private String flip(String value) {
+		if (value.equals("0")) {
+			return "1"; 
+		} else if (value.equals("1")) {
+			return "0"; 
+		} else {
+			Debug.println("cannot flip empty value");
+			return " ";
+		}
+	}
+
 
 }

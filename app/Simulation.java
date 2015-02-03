@@ -103,7 +103,7 @@ public class Simulation {
 
 	private static void reportDetails(int period) {
 		for (Organization org : organizations) {
-			org.printDetails(period);
+			org.printDetails(period); // @NOTE: not implemented yet
 		}
 	}
 

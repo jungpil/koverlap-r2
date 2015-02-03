@@ -97,7 +97,11 @@ public class Location {
 		}
 		return retString;
 	}
-		
+	
+	public void setLocationValueAt(int idx, String value) {
+		location[idx] = value;
+	}
+	
 	public static Location getLocationFromInt(int num) {
 		String loc = Integer.toBinaryString(num);
 		int zeros = Globals.N - loc.length();

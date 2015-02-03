@@ -28,16 +28,25 @@ public class Agile extends Organization {
 	
 	public void run() {
 		super.run(); // parent's run method first for any general procedures
-
+		// 1.  determine current unit to search; need to do this before as "completed" is determined during determineFocalUnitIdx
+		int focalUnitIdx = determineFocalUnitIdx(); // parent method
+		
 		if (!completed) {
-			// 1.  determine current unit to search
-			int focalUnitIdx = determineFocalUnitIdx(); // parent method
-			//     how do we find completed? --> cumulative number of no move units = numunits
+			
+			// how do we find completed? --> cumulative number of no move units = numunits
 			// have unit submit recommendation
-			// action -> move or stay
+			// action -> move or stay (move = valid location; stay = null)
 
-			String decision = units[focalUnitIdx].getRecommendation(location); // given the current location determine recommendation
-
+			Location proposedNeighbor = units[focalUnitIdx].getRecommendation(location); // given the current location determine recommendation
+			if (proposedNeighbor == null) { // unsuccessful search
+				// do nothing
+			} else {
+				for (int i = 0; i < Globals.N; i++) {
+					if (units[focalUnitIdx].knowDomainAt(i)) {
+						location.setLocationValueAt(i, proposedNeighbor.getLocationAt(i)); // move only within domain elements
+					}
+				}
+			}
 		} // if completed: do nothing
 
 	}

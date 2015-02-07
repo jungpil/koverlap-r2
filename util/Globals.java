@@ -31,7 +31,7 @@ public class Globals {
 	public static int[] domainDistributionsCounts;
 	public static String localKnowledgeIndices; // IMPLEMENT IN loadGlobals()
 	// public static int[] kdists;
-	public static boolean authority = false; // whether Bus can change IS or IS can change Bus; no need for now
+	// public static boolean authority = false; // whether Bus can change IS or IS can change Bus; no need for now
 	public static int numAlternatives = 1; // processing power; no need for now; 
 	public static double preferentialWeightage; 
 
@@ -67,11 +67,12 @@ public class Globals {
 				periods = Integer.parseInt(p.getProperty("periods")); // number of runs 
 				numRuns = Integer.parseInt(p.getProperty("runs"));
 				outfilename = p.getProperty("outfile");
-				if (outfilename == null) {
-					out = new PrintWriter(System.out);
-				} else {
-					out = new PrintWriter(new FileOutputStream(outfilename, true), true);
-				}
+				out = (outfilename == null) ? new PrintWriter(System.out) : new PrintWriter(new FileOutputStream(outfilename, true), true);
+				// if (outfilename == null) {
+				// 	out = new PrintWriter(System.out);
+				// } else {
+				// 	out = new PrintWriter(new FileOutputStream(outfilename, true), true);
+				// }
 //				debugfile = p.getProperty("debugfile");
 				influenceMatrixFile = p.getProperty("influenceMatrix");
 				numOrgs = Integer.parseInt(p.getProperty("numOrgs"));
@@ -79,57 +80,63 @@ public class Globals {
 //				busOverlap = Integer.parseInt(p.getProperty("busOverlap"));
 //				isOverlap = Integer.parseInt(p.getProperty("isOverlap"));
 				N = Integer.parseInt(p.getProperty("N"));
-				orgType = p.getProperty("orgType");
+				orgType = (p.getProperty("orgType") == null) ? "agile" : p.getProperty("orgType");
 				numUnits = Integer.parseInt(p.getProperty("numUnits"));
-				unitNames = p.getProperty("unitNames").split(","); // array
+				if (p.getProperty("unitNames") == null) {
+					for (int i = 0; i < numUnits; i++) {
+						unitNames[i] = "unit" + i;
+					}
+				} else {
+					unitNames = p.getProperty("unitNames").split(","); // array
+				}
+	
 				neighborSelectionApproach = p.getProperty("search");
-
-				// [added 3/24/12]
 
 				// e.g,. domainDistribution=4,8,4 for aaaabbbbbbbbcccc or 10,6 for aaaaaaaaaabbbbbb
 				domainDistributionsCounts = new int[p.getProperty("domainDistribution").split(",").length];
 				for (int i =0; i < p.getProperty("domainDistribution").split(",").length; i++) {
 					domainDistributionsCounts[i] = Integer.parseInt(p.getProperty("domainDistribution").split(",")[i]);
 				}
+				//localKnowledgeIndices = "1,1,0,0,0,0;0,0,1,1,0,0;0,0,0,0,1,1";; NO CHECKING HERE
+				localKnowledgeIndices = p.getProperty("knowledgeIndices");
+				String[] kIndices = localKnowledgeIndices.split(";");
+				for (int i = 0; i < kIndices.length; i++) {
+					String[] unitIndices = kIndices[i].split(",");
+					if (unitIndices.length != Globals.N) {
+						System.err.println("knowledge index for unit " + i + " (" + unitIndices.length + ") does not equal " + Globals.N + "[" + kIndices[i] + "]");
+						System.exit(0);
+					}
+				}
+				// neighborSelection = {random, myknowledge, othersknowledge, cross}
+				neighborSelectionApproach = (p.getProperty("neighborSelection") == null) ? "random" : p.getProperty("neighborSelection");
 
 				// String[] kdistributions = p.getProperty("kdistribution").split(",");
 				// kdists = new int[kdistributions.length];
 				// for (int i = 0; i < kdistributions.length; i++) {
 				// 	kdists[i] = Integer.parseInt(kdistributions[i]); 
 				// }
+				startLandscapeID = (p.getProperty("startLandscapeID") == null) ? 0 : Integer.parseInt(p.getProperty("startLandscapeID"));
 
-				String startLandscapeIDStr = p.getProperty("startLandscapeID");
-				if (startLandscapeIDStr == null) {
-					startLandscapeID = 0;
-				} else {
-					startLandscapeID = Integer.parseInt(startLandscapeIDStr);
-				}
 				// [end add]
-				reportLevel = p.getProperty("reportLevel");
-				if (p.getProperty("authority").equals("true") || p.getProperty("authority").equals("1")) { 
-					authority = true; 
-				} else { 
-					authority = false; 
-				}
+				reportLevel = (p.getProperty("reportLevel") == null) ? "summary" : "details";
+				// reportLevel = p.getProperty("reportLevel");
+				// if (p.getProperty("authority").equals("true") || p.getProperty("authority").equals("1")) { 
+				// 	authority = true; 
+				// } else { 
+				// 	authority = false; 
+				// }
 
 				if (p.getProperty("debug").equals("true") || p.getProperty("debug").equals("1")) { 
 					Debug.setDebug(true, p.getProperty("debugToFile").equals("true") || p.getProperty("debugToFile").equals("1")); 
-					// debug = true; 
-					// if (p.getProperty("debugToFile").equals("true") || p.getProperty("debugToFile").equals("1")) {
-					// 	Debug.setDebugFile();
-					// }
 					Debug.println(getConfigurations());
 				}
 
-				localAssessment = p.getProperty("fitnessCalc");
+				localAssessment = (p.getProperty("fitnessCalc") == null) ? "gl2000" : "ac2010"; // not needed here (default = gavetti & levinthal 2000)
 				
 			} catch (Exception e) {
 				System.err.println(e.getMessage());
 				e.printStackTrace();
 			} // END try..catch
-
-			// calculate derived values if any
-//			numAlternatives = (int)(N / numSubOrgs);
 
 		}  else { // end if confFile
 			setDefaults();
@@ -148,18 +155,21 @@ public class Globals {
 	
 	private static void setDefaults() {
 		numRuns = 1; // number of replications for current setting
-		periods = 100; // number of runs per replication
-		N = 16;
+		periods = 10; // number of runs per replication
+		N = 8;
 		outfilename = "results/default_testing.txt"; 
-		influenceMatrixFile = "conf/n16k7.txt";
+		influenceMatrixFile = "conf/n8k1.txt";
 		numOrgs = 1; // number of organizations to create within replication
 //		busOverlap = 0; // number of overlapping elements from IS that business knows 
 //		isOverlap = 0; // number of overlapping elements from Bus that IS knows
 		orgType = "agile"; // sequential | iterative | agile | joint
 		numUnits = 2;
 		unitNames[0] = "business"; unitNames[1] = "IS";
-		domainDistributionsCounts[0] = 8; domainDistributionsCounts[1] = 8;
-		authority = false; // whether Bus can change IS or IS can change Bus; no need for now
+		domainDistributionsCounts[0] = 4; domainDistributionsCounts[1] = 4;
+		localKnowledgeIndices = "1,1,1,1,0,1,0,0;0,0,1,0,1,1,1,1";
+		neighborSelectionApproach = "random";
+		startLandscapeID = 0;
+//		authority = false; // whether Bus can change IS or IS can change Bus; no need for now
 		numAlternatives = 1; // processing power; no need for now; 
 		reportLevel = "summary"; // reportLevel = {summary, details}
 		debugToFile = true;

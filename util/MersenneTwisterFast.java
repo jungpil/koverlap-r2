@@ -370,36 +370,36 @@ public class MersenneTwisterFast implements Serializable, Cloneable
 
 
     public final int[] nextUniqueIntBetween(int begin, int end, int count) {
-    	// 0, 7, 8 | 8, 15, 8
-    	int[] returnInts = new int[count]; // 8
-    	for (int i = 0; i < returnInts.length; i++) { returnInts[i] = -1; }
-    	int range = end - begin + 1; // range = 7 - 0 + 1 = 8
-//    	if (Globals.debug) { System.out.println("begin: " + begin); System.out.println("end: " + end); System.out.println("count: " + count); System.out.println("range: " + range); }
-    	int k = 0; 
-    	int j = 0;
-    	while (j < count) { // j < 8
-    		int r = nextInt(range) + begin; //
-//        	if (Globals.debug) { System.out.println("j: " + j + ", r = " + r); }
-    		boolean found = false;
-    		for (int i = 0; i < returnInts.length; i++) {
-//    			if (Globals.debug) { System.out.println("returnInts[" + i + "]: " + returnInts[i]);  }
-    			if (returnInts[i] == r) {
-    				found = true;
-//    				if (Globals.debug) { System.out.println("found");  }
-    				break;
-    			}
-    		}
-    		if (!found) {
-    			returnInts[j] = r;
-//    	    	if (Globals.debug) { System.out.println("adding r: " + r);  }
+        // 0, 7, 8 | 8, 15, 8
+        int[] returnInts = new int[count]; // 8
+        for (int i = 0; i < returnInts.length; i++) { returnInts[i] = -1; }
+        int range = end - begin + 1; // range = 7 - 0 + 1 = 8
+//      if (Globals.debug) { System.out.println("begin: " + begin); System.out.println("end: " + end); System.out.println("count: " + count); System.out.println("range: " + range); }
+//      int k = 0; 
+        int j = 0;
+        while (j < count) { // j < 8
+            int r = nextInt(range) + begin; //
+//          if (Globals.debug) { System.out.println("j: " + j + ", r = " + r); }
+            boolean found = false;
+            for (int i = 0; i < returnInts.length; i++) {
+//              if (Globals.debug) { System.out.println("returnInts[" + i + "]: " + returnInts[i]);  }
+                if (returnInts[i] == r) {
+                    found = true;
+//                  if (Globals.debug) { System.out.println("found");  }
+                    break;
+                }
+            }
+            if (!found) {
+                returnInts[j] = r;
+//              if (Globals.debug) { System.out.println("adding r: " + r);  }
 
-    			j++;
-    		}
-//    		k++;
-//    		if (k == 50) { break; }
-    	}
-    	
-    	return returnInts;
+                j++;
+            }
+//          k++;
+//          if (k == 50) { break; }
+        }
+        
+        return returnInts;
     }
     
     public final short nextShort()

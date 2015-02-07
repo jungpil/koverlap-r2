@@ -1,6 +1,5 @@
 package obj;
 
-import util.Globals;
 import util.Debug;
 
 public class Neighbor {

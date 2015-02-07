@@ -1,6 +1,5 @@
 package obj;
 
-import java.util.Collections;
 import java.util.Vector;
 import java.util.Set;
 import java.util.HashSet;
@@ -35,7 +34,6 @@ public class Unit {
 	// private int overlapIndex[] = new int[Globals.busOverlap];
 //	private int localKnowledgeIndex[]; 
 //	private int knowledgeOverlapIndex[];
-	private Location moveTo;
 	private boolean move; // if unit's decision is to move to new location, set this to true
 
 //	private boolean move; 
@@ -464,5 +462,16 @@ public class Unit {
 		neighbors = new Vector<Location>();
 		setNeighbors(loc, Globals.numAlternatives);
 	}
-
+	public String toString() {
+		String retString = unitName + ", domain " + Debug.arrayToString(domain);
+		retString += ", withinDomainOwnKnowledge " + Debug.arrayToString(withinDomainOwnKnowledge);
+		retString += ", outsideDomainOwnKnowledge " + Debug.arrayToString(outsideDomainOwnKnowledge);
+		retString += ", fullKnowledge " + Debug.arrayToString(fullKnowledge);
+		retString += ", withinDomainOthersKnowledge " + Debug.arrayToString(withinDomainOthersKnowledge);
+		retString += ", neighbors: ";
+		for (int i = 0; i < neighbors.size(); i++) {
+			retString += ((Location)neighbors.get(i)).toString() + selectionProbabilities[i] + ", ";
+		}
+		return retString; 
+	}
 }

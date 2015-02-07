@@ -9,7 +9,6 @@ public class Debug {
 	// if configFile specifies debugToFfile (boolean: true/1), then a printwriter is created
 	private static boolean debug = false;
 	private static PrintWriter debugPrintWriter;
-	private static boolean fileout = false;
 	private static String outfilename = "STDOUT"; 
 	
 	/**** +setDebug 

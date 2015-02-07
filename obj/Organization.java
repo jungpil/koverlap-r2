@@ -1,7 +1,5 @@
 package obj;
 
-import java.io.PrintWriter;
-
 import util.Globals;
 
 /**

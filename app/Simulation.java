@@ -4,8 +4,6 @@ import util.Globals;
 import obj.Organization;
 import obj.Agile;
 import java.util.Vector;
-import java.util.Iterator;
-import java.io.PrintWriter;
 import util.StatCalc;
 import util.Debug;
 

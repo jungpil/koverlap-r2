@@ -121,13 +121,33 @@ public class Location {
 		return loc;
 	}
 	
+//	public String toString() {
+//		String retString = "";
+//		for (int i = 0; i < location.length; i++) {
+//			if (location[i].equals(" ")) {
+//				retString += "x";
+//			} else {
+//				retString += location[i];
+//			}
+//		}
+//		return retString;
+//	}
+
 	public String toString() {
 		String retString = "";
 		for (int i = 0; i < location.length; i++) {
-			if (location[i].equals(" ")) {
-				retString += "x";
-			} else {
+			retString += location[i];
+		}
+		return retString;
+	}
+
+	public String toString(boolean[] knowledge) {
+		String retString = "";
+		for (int i = 0; i < location.length; i++) {
+			if (knowledge[i]) {
 				retString += location[i];
+			} else {
+				retString += "x";
 			}
 		}
 		return retString;

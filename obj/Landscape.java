@@ -1,7 +1,7 @@
 package obj;
 
 import java.util.ArrayList;
-import util.Globals;
+import util.*;
 import util.MersenneTwisterFast;
 
 public class Landscape {
@@ -72,7 +72,7 @@ public class Landscape {
 		for (int i = 0; i < Globals.N; i++) {
 			String s = maskedLoc.getLocationAt(i, im);
 			double d = getFitnessContribution(s, i);
-			System.out.println("s: " + s + ", i: " + i + ": " + d);
+//			Debug.println("s: " + s + ", i: " + i + ": " + d);
 			fitness += d;
 		}
 		fitness /= Globals.N;

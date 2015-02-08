@@ -1,5 +1,6 @@
 package obj;
 
+import util.Debug;
 import util.Globals;
 
 /**
@@ -30,15 +31,19 @@ public class Agile extends Organization {
 		super.run(); // parent's run method first for any general procedures
 		// 1.  determine current unit to search; need to do this before as "completed" is determined during determineFocalUnitIdx
 		int focalUnitIdx = determineFocalUnitIdx(); // parent method
-		
+		Debug.println("Agile.run() - orgID: " + index + ", focalUnit: " + focalUnitIdx);
+		Debug.println("Agile.run: current location: " + location.toString() + "(" + Globals.landscape.getFitness(location) + ")");
 		if (!completed) {
 			
 			// how do we find completed? --> cumulative number of no move units = numunits
 			// have unit submit recommendation
 			// action -> move or stay (move = valid location; stay = null)
-
+			lastSearchingUnitIdx = focalUnitIdx;
 			Location proposedNeighbor = units[focalUnitIdx].getRecommendation(location); // given the current location determine recommendation
+			
 			if (proposedNeighbor == null) { // unsuccessful search
+				Debug.println("proposed neighbor not found");
+				units[focalUnitIdx].proposalRejected();
 				// do nothing
 			} else {
 				for (int i = 0; i < Globals.N; i++) {
@@ -46,6 +51,10 @@ public class Agile extends Organization {
 						location.setLocationValueAt(i, proposedNeighbor.getLocationAt(i)); // move only within domain elements
 					}
 				}
+				units[focalUnitIdx].proposalAccepted();
+				
+				Debug.println("move to proposed location given knowledge");
+				Debug.println("new location: " + location.toString());
 			}
 		} // if completed: do nothing
 

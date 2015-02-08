@@ -18,7 +18,9 @@ public class Debug {
 		debug = debugOn;
 		try {
 			if (debugToFile) {
-				outfilename = "debug/debug-" + System.currentTimeMillis() + ".txt";
+				// @TODO change back after testing
+//				outfilename = "debug/debug-" + System.currentTimeMillis() + ".txt"; 
+				outfilename = "debug/debug.txt";
 				debugPrintWriter = new PrintWriter(new FileOutputStream(outfilename, true), true);
 			} else {
 				debugPrintWriter = new PrintWriter(System.err);
@@ -47,8 +49,10 @@ public class Debug {
 
 	public static String arrayToString(boolean[] array) {
 		String retString = "["; 
-		for (int i = 0; i < array.length - 1; i++) retString += array[i] + ", ";
-		retString += array[array.length - 1] + "]";
+		for (int i = 0; i < array.length - 1; i++) {
+			retString += (array[i]) ? "t" : "f"; 
+		}
+		retString += (array[array.length - 1]) ? "t]" : "f]";
 		return retString;
 	} 
 
@@ -68,7 +72,8 @@ public class Debug {
 
 	public static String arrayToString(String[] array) {
 		String retString = "["; 
-		for (int i = 0; i < array.length - 1; i++) retString += array[i] + ", ";
+//		for (int i = 0; i < array.length - 1; i++) retString += array[i] + ", ";
+		for (int i = 0; i < array.length - 1; i++) retString += array[i];
 		retString += array[array.length - 1] + "]";
 		return retString;
 	} 

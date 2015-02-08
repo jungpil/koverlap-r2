@@ -62,14 +62,17 @@ public class Unit {
 		setDomain(domainDistributionCnts); // set own knowledge domain 
 		setKnowledges(knowledgeIdxs);
 
-		// set neighbors for current location (init); @note: no need to save location; only need location info to set neighbors
-		resetSearchHistory(loc); // initialize nieghbor vector and sets neighbors
 
-		Debug.println("Unit " + idx + " (" + name + ") initiated with location " + loc.toString() 
-								+ ", withinDomainOwnKnowledge " + Debug.arrayToString(withinDomainOwnKnowledge) 
-								+ ", outsideDomainOwnKnowledge " + Debug.arrayToString(outsideDomainOwnKnowledge) 
-								+ ", withinDomainOthersKnowledge " + Debug.arrayToString(withinDomainOthersKnowledge) 
-								+ ", domain " + Debug.arrayToString(domain));
+		Debug.println("INIT Unit " + idx + " (" + name + ") - loc:" + loc.toString() 
+								+ ", domain " + Debug.arrayToString(domain)
+								+ ", wiDomOwnK " + Debug.arrayToString(withinDomainOwnKnowledge) 
+								+ ", outDomOwnK " + Debug.arrayToString(outsideDomainOwnKnowledge) 
+								+ ", wiDomOthK " + Debug.arrayToString(withinDomainOthersKnowledge) 
+								+ ", fullK " + Debug.arrayToString(fullKnowledge));
+
+		// set neighbors for current location (init); @note: no need to save location; only need location info to set neighbors
+//		resetSearchHistory(loc); // initialize nieghbor vector and sets neighbors // NO NEED DONE IN Org.determineFocalUnitIdx
+		
 		//
 		/** @todofor now; not sure if Unit will be responsible for search or Organization
 		 * organization should search by delegating recommendation to units; units don't need (or know) global location knowledge
@@ -88,9 +91,11 @@ public class Unit {
 
 		// get own current perceived fitness value
 		double currentFitness = Globals.landscape.getFitness(loc, fullKnowledge);
+		Debug.println("Unit.getRecommendation: org.location: " + loc.toString() + ", unit.location: " + loc.toString(fullKnowledge) + ", perceived fitness: " + currentFitness);
+
 		Location selectedNeighbor = pickNeighbor(loc);
 		double selectedNeighborFitness = Globals.landscape.getFitness(selectedNeighbor, fullKnowledge);
-
+		Debug.println("selected vs. current: " + selectedNeighborFitness + " : " + currentFitness);
 		if (selectedNeighborFitness > currentFitness) {
 			return selectedNeighbor;
 		} else {
@@ -105,9 +110,13 @@ public class Unit {
 		// implement neighbor selection method here
 		setNeighborSelectionProbabilities(loc);
 		double r = Globals.rand.nextDouble();
+		Debug.println("neighbor pick random number: " + r);
 		int selectedNeighborIndex = -1;
 		for (int i = 0; i < selectionProbabilities.length; i++) {
-			if (r < selectionProbabilities[i]) selectedNeighborIndex = i;
+			if (r < selectionProbabilities[i]) {
+				selectedNeighborIndex = i;
+				break;
+			}
 		}
 		return (Location)neighbors.remove(selectedNeighborIndex);
 	}
@@ -215,6 +224,7 @@ public class Unit {
 			}
 			selectionProbabilities[selectionProbabilities.length - 1] = 1d;  // no need; init will set it to 
 		}
+		Debug.print(printAllNeighbors());
 	}
 
 
@@ -276,6 +286,14 @@ public class Unit {
 		return count;
 	}
 
+	public void proposalAccepted() {
+		move = true;
+	}
+	
+	public void proposalRejected() {
+		move = false;
+	}
+	
 	public boolean decisionIsMove() {
 		return move;
 	}
@@ -302,7 +320,7 @@ public class Unit {
 		// 3. othersknowledge - give preferential weight (weighted probability by Globals.preferenceWeightages) for elements within my domain for which other units have shared knowledge
 		//                     -> if other unit knows an element, then focus on setting that first; neighbor set is same as random
 		// 4. cross - combination of myknowledge and othersknowledge - preferential weightage + expanded neighborset
-
+		Debug.println("Unit.setNeighbors(loc: " + loc.toString() + ", dist:" + maxDistance + ") for Unit #" + index + " (" + unitName + ")");
 		if (Globals.neighborSelectionApproach.equals("random")) { // option 0
 			List<Integer> ownNeighborCombinationKnowledgeIndices = new ArrayList<Integer>();
 			for (int i = 0; i < withinDomainOwnKnowledge.length; i++) {
@@ -322,7 +340,7 @@ public class Unit {
 						neighborLocString[comboInt] = flip(neighborLocString[comboInt]);
 					}
 					neighbors.add(new Location(neighborLocString));
-					Debug.println("add neighbor: " + Debug.arrayToString(neighborLocString));
+//					Debug.println("add neighbor: " + Debug.arrayToString(neighborLocString));
 				}
 			}
 
@@ -340,7 +358,7 @@ public class Unit {
 						neighborLocString[comboInt] = flip(neighborLocString[comboInt]);
 					}
 					tempNeighbors.add(new Location(neighborLocString));
-					Debug.println("add tempNeighbor: " + Debug.arrayToString(neighborLocString));
+//					Debug.println("add tempNeighbor: " + Debug.arrayToString(neighborLocString));
 				}
 			}
 			List<Integer> othersNeighborCombinationKnowledgeIndices = new ArrayList<Integer>();
@@ -353,12 +371,12 @@ public class Unit {
 					for (Location tempNeighbor : tempNeighbors) {
 						String[] neighborLocString = tempNeighbor.getLocation();
 						neighbors.add(new Location(neighborLocString)); // add original in temp
-						Debug.println("add neighbor: " + Debug.arrayToString(neighborLocString));
+//						Debug.println("add neighbor: " + Debug.arrayToString(neighborLocString));
 						for (Integer sharedComboInt : sharedCombo) {
 							neighborLocString[sharedComboInt] = flip(neighborLocString[sharedComboInt]);
 						}
 						neighbors.add(new Location(neighborLocString)); // add modified 
-						Debug.println("add neighbor: " + Debug.arrayToString(neighborLocString));
+//						Debug.println("add neighbor: " + Debug.arrayToString(neighborLocString));
 					}
 				}
 			}	
@@ -375,7 +393,7 @@ public class Unit {
 						neighborLocString[comboInt] = flip(neighborLocString[comboInt]);
 					}
 					neighbors.add(new Location(neighborLocString));
-					Debug.println("add neighbor: " + Debug.arrayToString(neighborLocString));
+//					Debug.println("add neighbor: " + Debug.arrayToString(neighborLocString));
 				}
 			}
 			
@@ -393,7 +411,7 @@ public class Unit {
 						neighborLocString[comboInt] = flip(neighborLocString[comboInt]);
 					}
 					tempNeighbors.add(new Location(neighborLocString));
-					Debug.println("add tempNeighbor: " + Debug.arrayToString(neighborLocString));
+//					Debug.println("add tempNeighbor: " + Debug.arrayToString(neighborLocString));
 				}
 			}
 			List<Integer> othersNeighborCombinationKnowledgeIndices = new ArrayList<Integer>();
@@ -406,16 +424,19 @@ public class Unit {
 					for (Location tempNeighbor : tempNeighbors) {
 						String[] neighborLocString = tempNeighbor.getLocation();
 						neighbors.add(new Location(neighborLocString)); // add original in temp
-						Debug.println("add neighbor: " + Debug.arrayToString(neighborLocString));
+//						Debug.println("add neighbor: " + Debug.arrayToString(neighborLocString));
 						for (Integer sharedComboInt : sharedCombo) {
 							neighborLocString[sharedComboInt] = flip(neighborLocString[sharedComboInt]);
 						}
 						neighbors.add(new Location(neighborLocString)); // add modified 
-						Debug.println("add neighbor: " + Debug.arrayToString(neighborLocString));
+//						Debug.println("add neighbor: " + Debug.arrayToString(neighborLocString));
 					}
 				}
 			}
 		}
+		Debug.print("setNeighbors(" + neighbors.size() + ") - ");
+		for (Location n : neighbors)  Debug.print("[" + n.toString() + "] ");
+		Debug.println("");
 	}
 	
 	private String flip(String value) {
@@ -429,8 +450,13 @@ public class Unit {
 		}
 	}
 
-	public void printAllNeighbors() {
-		
+	public String printAllNeighbors() {
+		String retString = "";
+		for (int i = 0; i < neighbors.size(); i++) {
+			Location l = (Location)neighbors.get(i);
+			retString += l.toString() + " - perceived fitness: (" + l.toString(fullKnowledge) + ") " + Globals.landscape.getFitness(l, fullKnowledge) + ", selectionProb: " + selectionProbabilities[i] + "\n"; 
+		}
+		return retString;
 	}
 	
 	private Set<Set<Integer>> getCombinationsFor(List<Integer> group, int subsetSize) {
@@ -458,10 +484,12 @@ public class Unit {
     	return resultingCombinations;
 	}
 
-	private void resetSearchHistory(Location loc) {
+	protected void resetSearchHistory(Location loc) {
 		neighbors = new Vector<Location>();
+		move = false;
 		setNeighbors(loc, Globals.numAlternatives);
 	}
+	
 	public String toString() {
 		String retString = unitName + ", domain " + Debug.arrayToString(domain);
 		retString += ", withinDomainOwnKnowledge " + Debug.arrayToString(withinDomainOwnKnowledge);

@@ -1,6 +1,6 @@
 package obj;
 
-import util.Globals;
+import util.*;
 
 /**
  *   - determine current Unit to do search
@@ -20,7 +20,7 @@ public class Organization {
 	protected int lastSearchingUnitIdx = -1;
 	protected int next = -1; // focal DMU (whose turn is it to search)?
 	protected boolean lastPrinted = false;
-
+	protected int numNoMoveUnits = 0;
 
 	public Organization(int idx) {
 		index = idx;
@@ -77,16 +77,27 @@ public class Organization {
 		try { // arrayIndexOutOfBounds Exception since lastSearchingUnitIdx initialized to -1
 			if (units[lastSearchingUnitIdx].decisionIsMove()) { // last unit moved
 				idx = (lastSearchingUnitIdx+1) % units.length; // modulus loops back to 0
+				numNoMoveUnits = 0;
+				units[idx].resetSearchHistory(location);
 			} else { // last unit couldn't move
 				if (units[lastSearchingUnitIdx].hasNeighbors()) { // still has neighbors
 					idx = lastSearchingUnitIdx;
 				} else { // no more neighbors
 					idx = (lastSearchingUnitIdx+1) % units.length; // modulus loops back to 0
+					numNoMoveUnits++;
+					if (numNoMoveUnits >= Globals.numUnits) {
+						completed = true;
+						Debug.println("organization (" + index + ") has completed its search");
+					} else {
+						units[idx].resetSearchHistory(location);
+					}
 				}
 			}
 		} catch (ArrayIndexOutOfBoundsException e) {
 			// ignore, exception caught to simplify identification of start since lastSearchingUnitIdx = -1 (from Class initialize)
 			// return idx = 0;
+			idx = 0; 
+			units[idx].resetSearchHistory(location);
 		}
 		return idx;
 	}

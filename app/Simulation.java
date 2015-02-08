@@ -49,9 +49,11 @@ public class Simulation {
 			Debug.println("Organizations (" + Globals.orgType + ") created for landscape " + j);
 
 			/** initial setup -- t = -1 */
+			Debug.println("report(-1)");
 			report(-1);
 
 			/** Run one iteration = 1 landscape X NumOrgs organizations */
+			Debug.println("Start runIterations(" + Globals.periods + ")");
 			runIteration(Globals.periods);
 
 			Debug.println("Finished iteration for landscape (" + j + ")");
@@ -63,7 +65,7 @@ public class Simulation {
 	private static void runIteration(int periods) {
 		// if periods = -1 then run until equilibrium else run (period) number of time ticks
 		for (int t = 0; t < periods + 1; t++) {
-			Debug.println("Simulation.run()\tperiod:\t" + t);
+			Debug.println("Simulation.runIteration() - period: " + t);
 
 			for (Organization org : organizations) {
 				org.run();

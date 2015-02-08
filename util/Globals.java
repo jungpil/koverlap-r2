@@ -155,31 +155,34 @@ public class Globals {
 	
 	private static void setDefaults() {
 		numRuns = 1; // number of replications for current setting
-		periods = 10; // number of runs per replication
+		periods = 50; // number of runs per replication
 		N = 8;
 		outfilename = "results/default_testing.txt"; 
-		influenceMatrixFile = "conf/n8k1.txt";
-		numOrgs = 1; // number of organizations to create within replication
+		influenceMatrixFile = "inf/n8k1.txt";
+		numOrgs = 2; // number of organizations to create within replication
 //		busOverlap = 0; // number of overlapping elements from IS that business knows 
 //		isOverlap = 0; // number of overlapping elements from Bus that IS knows
 		orgType = "agile"; // sequential | iterative | agile | joint
 		numUnits = 2;
-		unitNames[0] = "business"; unitNames[1] = "IS";
-		domainDistributionsCounts[0] = 4; domainDistributionsCounts[1] = 4;
+		unitNames = new String[]{"business", "IS"};
+//		unitNames[0] = "business"; unitNames[1] = "IS";
+		domainDistributionsCounts = new int[]{4, 4};
+//		domainDistributionsCounts[0] = 4; domainDistributionsCounts[1] = 4;
 		localKnowledgeIndices = "1,1,1,1,0,1,0,0;0,0,1,0,1,1,1,1";
-		neighborSelectionApproach = "random";
+		neighborSelectionApproach = "myknowledge";
 		startLandscapeID = 0;
 //		authority = false; // whether Bus can change IS or IS can change Bus; no need for now
 		numAlternatives = 1; // processing power; no need for now; 
 		reportLevel = "summary"; // reportLevel = {summary, details}
-		debugToFile = true;
+//		debugToFile = true;
+		Debug.setDebug(true, true);
 		replicate = true; // if replicate true; then runID is sequential; otherwise SystemMillis
-		localAssessment = "ac2010"; // for almirall & casadesus-masanell 2010 or "gl2000" for gavetti and levinthal
+		localAssessment = "gl2000"; // for almirall & casadesus-masanell 2010 or "gl2000" for gavetti and levinthal
 	}
 
 	public static void createLandscape(int id) {
 		landscape  = new Landscape(id, new InfluenceMatrix(influenceMatrixFile));
-		Debug.println("Glboals.createLandscape: landscape created at " + id + " with maxFitness " + landscape.getMaxFitness());
+		Debug.println("Globals.createLandscape: landscape created at " + id + " with maxFitness " + landscape.getMaxFitness());
 
 	}
 	
@@ -188,7 +191,7 @@ public class Globals {
 		if (replicate) { runID = (long)intRunID;
 		} else { runID = System.currentTimeMillis(); }
 		rand = new MersenneTwisterFast(runID);
-		Debug.println("Glboals.setRandomNumbers: random number seed set to: " + runID);
+//		Debug.println("Globals.setRandomNumbers: random number seed set to: " + runID);
 	} 
 	
 	public static String getConfigurations() {

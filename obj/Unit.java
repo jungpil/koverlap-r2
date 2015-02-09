@@ -370,8 +370,8 @@ public class Unit {
 				if (!sharedCombo.isEmpty()) {
 					for (Location tempNeighbor : tempNeighbors) {
 						String[] neighborLocString = tempNeighbor.getLocation();
-						neighbors.add(new Location(neighborLocString)); // add original in temp
-//						Debug.println("add neighbor: " + Debug.arrayToString(neighborLocString));
+//						neighbors.add(new Location(neighborLocString)); // add original in temp
+//						Debug.println("add neighbor (orig in temp): " + Debug.arrayToString(neighborLocString));
 						for (Integer sharedComboInt : sharedCombo) {
 							neighborLocString[sharedComboInt] = flip(neighborLocString[sharedComboInt]);
 						}
@@ -380,6 +380,10 @@ public class Unit {
 					}
 				}
 			}	
+			for (Location tempNeighbor : tempNeighbors) {
+				String[] neighborLocString = tempNeighbor.getLocation();
+				neighbors.add(new Location(neighborLocString)); // add original in temp
+			}
 		} else if (Globals.neighborSelectionApproach.equals("othersknowledge")) { // option 1
 			List<Integer> ownNeighborCombinationKnowledgeIndices = new ArrayList<Integer>();
 			for (int i = 0; i < withinDomainOwnKnowledge.length; i++) {
@@ -423,7 +427,7 @@ public class Unit {
 				if (!sharedCombo.isEmpty()) {
 					for (Location tempNeighbor : tempNeighbors) {
 						String[] neighborLocString = tempNeighbor.getLocation();
-						neighbors.add(new Location(neighborLocString)); // add original in temp
+//						neighbors.add(new Location(neighborLocString)); // add original in temp
 //						Debug.println("add neighbor: " + Debug.arrayToString(neighborLocString));
 						for (Integer sharedComboInt : sharedCombo) {
 							neighborLocString[sharedComboInt] = flip(neighborLocString[sharedComboInt]);
@@ -432,6 +436,10 @@ public class Unit {
 //						Debug.println("add neighbor: " + Debug.arrayToString(neighborLocString));
 					}
 				}
+			}
+			for (Location tempNeighbor : tempNeighbors) {
+				String[] neighborLocString = tempNeighbor.getLocation();
+				neighbors.add(new Location(neighborLocString)); // add original in temp
 			}
 		}
 		Debug.print("setNeighbors(" + neighbors.size() + ") - ");

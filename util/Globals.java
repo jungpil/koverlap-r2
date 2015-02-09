@@ -178,8 +178,8 @@ public class Globals {
 //		unitNames[0] = "business"; unitNames[1] = "IS";
 		domainDistributionsCounts = new int[]{4, 4};
 //		domainDistributionsCounts[0] = 4; domainDistributionsCounts[1] = 4;
-		localKnowledgeIndices = "1,1,1,1,1,1,1,1;0,0,1,0,1,1,1,1";
-		neighborSelectionApproach = "myknowledge";
+		localKnowledgeIndices = "1,1,1,1,1,1,1,0;0,0,1,0,1,1,1,1";
+		neighborSelectionApproach = "random";
 		startLandscapeID = 0;
 //		authority = false; // whether Bus can change IS or IS can change Bus; no need for now
 		numAlternatives = 1; // processing power; no need for now; 

@@ -21,7 +21,7 @@ public class Debug {
 			if (debugToFile) {
 				new File("debug").mkdirs();
 				// @TODO change back after testing
-//				outfilename = "debug/debug-" + System.currentTimeMillis() + ".txt"; 
+//				outfilename = "debug-" + System.currentTimeMillis() + ".txt"; 
 				outfilename = "debug.txt";
 				debugPrintWriter = new PrintWriter(new FileOutputStream("debug/" + outfilename, true), true);
 			} else {

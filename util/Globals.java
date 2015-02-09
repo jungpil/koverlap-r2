@@ -167,8 +167,9 @@ public class Globals {
 			System.err.println(io.getMessage());
 			io.printStackTrace();
 		}
+		preferentialWeightage = 2d;
 		influenceMatrixFile = "inf/n8k1.txt";
-		numOrgs = 2; // number of organizations to create within replication
+		numOrgs = 1; // number of organizations to create within replication
 //		busOverlap = 0; // number of overlapping elements from IS that business knows 
 //		isOverlap = 0; // number of overlapping elements from Bus that IS knows
 		orgType = "agile"; // sequential | iterative | agile | joint
@@ -177,7 +178,7 @@ public class Globals {
 //		unitNames[0] = "business"; unitNames[1] = "IS";
 		domainDistributionsCounts = new int[]{4, 4};
 //		domainDistributionsCounts[0] = 4; domainDistributionsCounts[1] = 4;
-		localKnowledgeIndices = "1,1,1,1,0,1,0,0;0,0,1,0,1,1,1,1";
+		localKnowledgeIndices = "1,1,1,1,1,1,1,1;0,0,1,0,1,1,1,1";
 		neighborSelectionApproach = "myknowledge";
 		startLandscapeID = 0;
 //		authority = false; // whether Bus can change IS or IS can change Bus; no need for now

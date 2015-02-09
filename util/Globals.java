@@ -3,6 +3,7 @@ package util;
 import util.MersenneTwisterFast;
 import util.Debug;
 import java.util.Properties;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
@@ -67,12 +68,13 @@ public class Globals {
 				periods = Integer.parseInt(p.getProperty("periods")); // number of runs 
 				numRuns = Integer.parseInt(p.getProperty("runs"));
 				outfilename = p.getProperty("outfile");
-				out = (outfilename == null) ? new PrintWriter(System.out) : new PrintWriter(new FileOutputStream(outfilename, true), true);
-				// if (outfilename == null) {
-				// 	out = new PrintWriter(System.out);
-				// } else {
-				// 	out = new PrintWriter(new FileOutputStream(outfilename, true), true);
-				// }
+//				out = (outfilename == null) ? new PrintWriter(System.out) : new PrintWriter(new FileOutputStream(outfilename, true), true);
+				if (outfilename == null) {
+					out = new PrintWriter(System.out);
+				} else {
+					new File("results").mkdirs();
+				 	out = new PrintWriter(new FileOutputStream("results/" + outfilename, true), true);
+				}
 //				debugfile = p.getProperty("debugfile");
 				influenceMatrixFile = p.getProperty("influenceMatrix");
 				numOrgs = Integer.parseInt(p.getProperty("numOrgs"));
@@ -142,13 +144,13 @@ public class Globals {
 			setDefaults();
 		}
 		
-		try {
-			// create output printwriter
-			out = new PrintWriter(new FileOutputStream(outfilename, true), true);
-		} catch (IOException io) {
-			System.err.println(io.getMessage());
-			io.printStackTrace();
-		}
+//		try {
+//			// create output printwriter
+//			out = new PrintWriter(new FileOutputStream(outfilename, true), true);
+//		} catch (IOException io) {
+//			System.err.println(io.getMessage());
+//			io.printStackTrace();
+//		}
 		Debug.println("Globals.loadGlobals: configFile loaded");
 
 	}
@@ -157,7 +159,14 @@ public class Globals {
 		numRuns = 1; // number of replications for current setting
 		periods = 50; // number of runs per replication
 		N = 8;
-		outfilename = "results/default_testing.txt"; 
+		outfilename = "default_testing.txt"; 
+		try {
+			new File("results").mkdirs();
+		 	out = new PrintWriter(new FileOutputStream("results/" + outfilename, true), true);
+		} catch  (IOException io) {
+			System.err.println(io.getMessage());
+			io.printStackTrace();
+		}
 		influenceMatrixFile = "inf/n8k1.txt";
 		numOrgs = 2; // number of organizations to create within replication
 //		busOverlap = 0; // number of overlapping elements from IS that business knows 

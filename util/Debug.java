@@ -3,6 +3,7 @@ package util;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.io.IOException;
+import java.io.File;
 
 public class Debug {
 	// debugging set to FALSE by default unless otherwise turned on in Globals
@@ -18,10 +19,11 @@ public class Debug {
 		debug = debugOn;
 		try {
 			if (debugToFile) {
+				new File("debug").mkdirs();
 				// @TODO change back after testing
 //				outfilename = "debug/debug-" + System.currentTimeMillis() + ".txt"; 
-				outfilename = "debug/debug.txt";
-				debugPrintWriter = new PrintWriter(new FileOutputStream(outfilename, true), true);
+				outfilename = "debug.txt";
+				debugPrintWriter = new PrintWriter(new FileOutputStream("debug/" + outfilename, true), true);
 			} else {
 				debugPrintWriter = new PrintWriter(System.err);
 			}

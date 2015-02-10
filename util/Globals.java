@@ -121,8 +121,8 @@ public class Globals {
 				startLandscapeID = (p.getProperty("startLandscapeID") == null) ? 0 : Integer.parseInt(p.getProperty("startLandscapeID"));
 
 				// [end add]
-				reportLevel = (p.getProperty("reportLevel") == null) ? "summary" : "details";
-				// reportLevel = p.getProperty("reportLevel");
+				// reportLevel = (p.getProperty("reportLevel") == null) ? "summary" : "details";
+				reportLevel = p.getProperty("reportLevel");
 				// if (p.getProperty("authority").equals("true") || p.getProperty("authority").equals("1")) { 
 				// 	authority = true; 
 				// } else { 

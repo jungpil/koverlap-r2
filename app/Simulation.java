@@ -72,7 +72,7 @@ public class Simulation {
 			}
 			
 			report(t);
-			if (allEnded()) break;
+//			if (allEnded()) break;
 		}
 	}
 	
@@ -109,14 +109,19 @@ public class Simulation {
 
 	private static void reportSummary(int period) {
 		// calc average and report average for landscape
-		StatCalc stat = new StatCalc();
+//		StatCalc stat = new StatCalc();
+		StatCalc.reset();
 		int completed = 0;
 		for(Organization org : organizations) {
-			stat.enter(org.getOrgFitness());
+			StatCalc.enter(Globals.landscape.getNormalizedFitness(org.getOrgFitness())); // use normalized values
 //			stat.enter(org.getFitness());
 			if (org.finished()) { completed++; }
 		}
-		Globals.out.println(Globals.landscape.getLandscapeID() + "\t" + period + "\t" + completed + "\t" + stat.getMean() + "\t" + stat.getStandardDeviation() + "\t" + stat.getMin() + "\t" + stat.getMax());
+		Globals.out.println(Globals.landscape.getLandscapeID() + "\t" + period + "\t" + completed + "\t" 
+						+ StatCalc.getMean() + "\t" 
+						+ StatCalc.getStandardDeviation() + "\t" 
+						+ StatCalc.getMin() + "\t" 
+						+ StatCalc.getMax());
 	}
 
 	/** checks if all agents are done; for early break */

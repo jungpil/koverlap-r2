@@ -10,6 +10,7 @@ public class Landscape {
 	private double[] fitnessContribs;
 	private double[] fitness;
 	private double landscapeMaxFitness;
+	private double landscapeMinFitness;
 	private long landscapeID; 
 	
 	public Landscape(int lndscpID, InfluenceMatrix inf) {
@@ -98,23 +99,35 @@ public class Landscape {
 
 	private void setFitnessLandscape() {
 		double maxFitness = 0d;
+		double minFitness = 1d;
 		fitness = new double[(int)(Math.pow(2, Globals.N))];
 		for (int i = 0; i < fitness.length; i++) {
 			fitness[i] = getFitness(Location.getLocationFromInt(i));
-			if (fitness[i] > maxFitness) {
-				maxFitness = fitness[i];
-			}
+			maxFitness = (fitness[i] > maxFitness) ? fitness[i] : maxFitness;
+			minFitness = (fitness[i] < minFitness) ? fitness[i] : minFitness;
+//			if (fitness[i] > maxFitness) {
+//				maxFitness = fitness[i];
+//			}
 		}
 		landscapeMaxFitness = maxFitness;
+		landscapeMinFitness = minFitness;
 	}
 	
 	/**
-	 * returns the maximum fitness value for the landscape
+	 * returns the maximum / minimum / normalized fitness value for the landscape
 	 */
 	public double getMaxFitness() {
 		return landscapeMaxFitness;
 	}
+	
+	public double getMinFitness() {
+		return landscapeMinFitness;
+	}
 
+	public double getNormalizedFitness(double aFitness) {
+		return ((aFitness - landscapeMinFitness) / (landscapeMaxFitness - landscapeMinFitness));
+	}
+	
     /**
      * used by 
      * private method that sets the fitness contribution for a particular 

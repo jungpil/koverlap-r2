@@ -11,3 +11,5 @@
 *.qs
 *.o
 *.e
+debug/*.txt
+results/*.txt

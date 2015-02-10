@@ -78,6 +78,7 @@ public class Globals {
 //				debugfile = p.getProperty("debugfile");
 				influenceMatrixFile = p.getProperty("influenceMatrix");
 				numOrgs = Integer.parseInt(p.getProperty("numOrgs"));
+				preferentialWeightage = Double.parseDouble(p.getProperty("preferentialWeightage"));
 //				overlap = Integer.parseInt(p.getProperty("overlap"));
 //				busOverlap = Integer.parseInt(p.getProperty("busOverlap"));
 //				isOverlap = Integer.parseInt(p.getProperty("isOverlap"));
@@ -111,7 +112,7 @@ public class Globals {
 				}
 				// neighborSelection = {random, myknowledge, othersknowledge, cross}
 				neighborSelectionApproach = (p.getProperty("neighborSelection") == null) ? "random" : p.getProperty("neighborSelection");
-
+				numAlternatives = Integer.parseInt(p.getProperty("power"));
 				// String[] kdistributions = p.getProperty("kdistribution").split(",");
 				// kdists = new int[kdistributions.length];
 				// for (int i = 0; i < kdistributions.length; i++) {

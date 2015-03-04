@@ -223,6 +223,9 @@ public class Unit {
 				selectionProbabilities[i] = selectionProbabilities[i-1] + (diffAtOthersSharedKnowledge[i] / sumWeights);
 			}
 			selectionProbabilities[selectionProbabilities.length - 1] = 1d;  // no need; init will set it to 
+		} else {
+			System.err.println("Globals.neighborSelectionApproach not set");
+			System.exit(1);
 		}
 		Debug.print(printAllNeighbors());
 	}
@@ -441,6 +444,9 @@ public class Unit {
 				String[] neighborLocString = tempNeighbor.getLocation();
 				neighbors.add(new Location(neighborLocString)); // add original in temp
 			}
+		} else {
+			System.err.println("Globals.neighborSelectionApproach not set");
+			System.exit(1);
 		}
 		Debug.print("setNeighbors(" + neighbors.size() + ") - ");
 		for (Location n : neighbors)  Debug.print("[" + n.toString() + "] ");

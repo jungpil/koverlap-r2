@@ -13,3 +13,4 @@
 *.e
 debug/*.txt
 results/*.txt
+setup/*

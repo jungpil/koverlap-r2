@@ -13,4 +13,10 @@
 *.e
 debug/*.txt
 results/*.txt
+results.old/*.txt
 setup/*
+conf/*.conf
+conf.old/*
+todo/*
+todo_2/*
+*.sh

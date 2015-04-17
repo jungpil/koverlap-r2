@@ -172,7 +172,7 @@ public class Location {
 			location[r] = "0";
 		}
 	}
-	
+
 	public static void main(String args[]){
 		Location l = new Location();
 		Location global = new Location(l.getLocation());

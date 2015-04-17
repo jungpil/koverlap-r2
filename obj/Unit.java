@@ -86,7 +86,7 @@ public class Unit {
 	}
 
 	public Location getRecommendation(Location loc) {
-		// need to take care of 2 situations: experiential search vs. comprehensive search
+		// need to take care of 2 situations: experiential search vs. exhaustive search
 		//Landscape.getFitness(Location l, boolean[] know) {
 
 		// get own current perceived fitness value
@@ -108,17 +108,34 @@ public class Unit {
 		// @todo: it's kind of awkward having to pass the location every time but there is really no 
 		// need to store the location as a data member 
 		// implement neighbor selection method here
-		setNeighborSelectionProbabilities(loc);
-		double r = Globals.rand.nextDouble();
-		Debug.println("neighbor pick random number: " + r);
-		int selectedNeighborIndex = -1;
-		for (int i = 0; i < selectionProbabilities.length; i++) {
-			if (r < selectionProbabilities[i]) {
-				selectedNeighborIndex = i;
-				break;
+
+		// exhaustive vs. experiential
+		Location candidate = null;
+		if (Globals.search.equals("experiential")) {
+			setNeighborSelectionProbabilities(loc);
+			double r = Globals.rand.nextDouble();
+			Debug.println("neighbor pick random number: " + r);
+			int selectedNeighborIndex = -1;
+			for (int i = 0; i < selectionProbabilities.length; i++) {
+				if (r < selectionProbabilities[i]) {
+					selectedNeighborIndex = i;
+					break;
+				}
 			}
+			candidate = (Location)neighbors.remove(selectedNeighborIndex);
+		} else if (Globals.search.equals("exhaustive")) {
+			// return highest performing neighbor; selection probability is irrelevant
+			double currentMax = 0.0d;
+			int currentMaxIdx = -1;
+			for (int i = 0; i < neighbors.size(); i++) {
+
+				if (Globals.landscape.getFitness((Location)neighbors.get(i), fullKnowledge) > currentMax) {
+					currentMaxIdx = i;
+				}
+			}
+			candidate = neighbors.get(currentMaxIdx);
 		}
-		return (Location)neighbors.remove(selectedNeighborIndex);
+		return candidate;
 	}
 
 	private void setDomain(int[] domainDistributionCnts) {
@@ -325,6 +342,7 @@ public class Unit {
 		// 4. cross - combination of myknowledge and othersknowledge - preferential weightage + expanded neighborset
 		Debug.println("Unit.setNeighbors(loc: " + loc.toString() + ", dist:" + maxDistance + ") for Unit #" + index + " (" + unitName + ")");
 		if (Globals.neighborSelectionApproach.equals("random")) { // option 0
+		/** OPTION 1: RANDOM **/
 			List<Integer> ownNeighborCombinationKnowledgeIndices = new ArrayList<Integer>();
 			for (int i = 0; i < withinDomainOwnKnowledge.length; i++) {
 				if (withinDomainOwnKnowledge[i]) ownNeighborCombinationKnowledgeIndices.add(i);
@@ -348,6 +366,7 @@ public class Unit {
 			}
 
 		} else if (Globals.neighborSelectionApproach.equals("myknowledge")) { // option 2
+		/** OPTION 2: MYKNOWLEDGE **/
 			Vector<Location> tempNeighbors = new Vector<Location>();
 			List<Integer> ownNeighborCombinationKnowledgeIndices = new ArrayList<Integer>();
 			for (int i = 0; i < withinDomainOwnKnowledge.length; i++) {

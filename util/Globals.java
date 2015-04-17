@@ -41,7 +41,7 @@ public class Globals {
 	// public static int[] kdists;
 	// public static boolean authority = false; // whether Bus can change IS or IS can change Bus; no need for now
 	// public static int numAlternatives = 1; // processing power; no need for now; 
-	public static int numAlternatives; // processing power; no need for now; 
+	public static int numAlternatives; // maxDistance in setting neighbors for myknowledge and cross
 	public static double preferentialWeightage; 
 
 	// public static String reportLevel = "summary"; // reportLevel = {summary, details}
@@ -57,7 +57,7 @@ public class Globals {
 									// myknowledge -> pick based on my shared knowledge of other domains 
 									// othersknowledge -> pick based on others shared knowledge of my domain
 									// cross -> ?????
-
+	public static String search; // "experiential" vs. "exhaustive"
 	/**
 	 * utils
 	 */
@@ -110,8 +110,11 @@ public class Globals {
 					unitNames = p.getProperty("unitNames").split(","); // array
 				}
 	
-				neighborSelectionApproach = p.getProperty("search");
+				neighborSelectionApproach = p.getProperty("selection");
 				if (neighborSelectionApproach == null) crash("neighborSelectionApproach not set");
+				
+				search = p.getProperty("search");
+				if (search == null) crash("search (experiential vs. exhaustive) not set");
 
 				// e.g,. domainDistribution=4,8,4 for aaaabbbbbbbbcccc or 10,6 for aaaaaaaaaabbbbbb
 				domainDistributionsCounts = new int[p.getProperty("domainDistribution").split(",").length];

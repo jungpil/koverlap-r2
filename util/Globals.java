@@ -44,6 +44,9 @@ public class Globals {
 	public static int numAlternatives; // maxDistance in setting neighbors for myknowledge and cross
 	public static double preferentialWeightage; 
 
+	// distance measures for application and process novelty (Tiwana 2012)
+	public static int[] unitDistance;
+
 	// public static String reportLevel = "summary"; // reportLevel = {summary, details}
 	public static String reportLevel; // reportLevel = {summary, details}
 	public static boolean debugToFile = false;
@@ -131,6 +134,13 @@ public class Globals {
 						System.exit(1);
 					}
 				}
+
+				// e.g., unitDistance=6,4 for 6 flips in unit_1 and 4 flips in unit_2.
+				unitDistance = new int[p.getProperty("unitDistance").split(",").length];
+				for (int i =0; i < p.getProperty("unitDistance").split(",").length; i++) {
+					unitDistance[i] = Integer.parseInt(p.getProperty("unitDistance").split(",")[i]);
+				}
+
 				// neighborSelection = {random, myknowledge, othersknowledge, cross}
 				// neighborSelectionApproach = (p.getProperty("neighborSelection") == null) ? "random" : p.getProperty("neighborSelection");
 				numAlternatives = Integer.parseInt(p.getProperty("power"));

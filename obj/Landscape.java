@@ -12,6 +12,7 @@ public class Landscape {
 	private double landscapeMaxFitness;
 	private double landscapeMinFitness;
 	private long landscapeID; 
+	private Location optimalLocation;
 	
 	public Landscape(int lndscpID, InfluenceMatrix inf) {
 		landscapeID = (long)lndscpID;
@@ -98,19 +99,21 @@ public class Landscape {
 	}
 
 	private void setFitnessLandscape() {
-		double maxFitness = 0d;
-		double minFitness = 1d;
+		// @TODO need to also store the max fitness producing location
+		// double maxFitness = 0d;
+		// double minFitness = 1d;
 		fitness = new double[(int)(Math.pow(2, Globals.N))];
 		for (int i = 0; i < fitness.length; i++) {
 			fitness[i] = getFitness(Location.getLocationFromInt(i));
-			maxFitness = (fitness[i] > maxFitness) ? fitness[i] : maxFitness;
-			minFitness = (fitness[i] < minFitness) ? fitness[i] : minFitness;
-//			if (fitness[i] > maxFitness) {
-//				maxFitness = fitness[i];
-//			}
+			//maxFitness = (fitness[i] > maxFitness) ? fitness[i] : maxFitness;
+			if (fitness[i] > landscapeMaxFitness) {
+				landscapeMaxFitness = fitness[i]; 
+				optimalLocation = new Location(Location.getLocationFromInt(i));
+			}
+			landscapeMinFitness = (fitness[i] < landscapeMinFitness) ? fitness[i] : landscapeMinFitness;
 		}
-		landscapeMaxFitness = maxFitness;
-		landscapeMinFitness = minFitness;
+		// landscapeMaxFitness = maxFitness;
+		// landscapeMinFitness = minFitness;
 	}
 	
 	/**
@@ -126,6 +129,10 @@ public class Landscape {
 
 	public double getNormalizedFitness(double aFitness) {
 		return ((aFitness - landscapeMinFitness) / (landscapeMaxFitness - landscapeMinFitness));
+	}
+	
+	public Location getOptimalLocation() {
+		return optimalLocation;
 	}
 	
     /**

@@ -38,6 +38,34 @@ public class Location {
 		}
 	}
 	
+	public Location(Location bestLocation, int[] distance) {
+		// distance = {2, 3} => flip 2 from Bus and 3 from IS
+
+		// get begin and ends of units dimensions from Globals.domainDistribution=4,8,4 for aaaabbbbbbbbcccc or 10,6 for aaaaaaaaaabbbbbb
+		int[] begins = new int[Globals.numUnits];
+		int[] ends = new int[Globals.numUnits];
+		begins[0] = 0;
+		for (int i = 0; i < Globals.numUnits; i++) {
+			ends[i] = begins[i] + Globals.domainDistributionCounts[i] - 1;
+			if (i < Globals.numUnits - 1) {
+				begins[i+1] = ends[i] + 1;	
+			}
+		}
+
+		location = Globals.landscape.getOptimalLocation().getLocation();
+		for (int i = 0; i < Globals.numUnits; i++) {
+			int[] flips = Globals.rand.nextUniqueIntBetween(begins[i], ends[i], distance[i]);
+			for (int j = 0; j < flips.length; j++) {
+				if (location[flips[j]].equals("0")) {
+					location[flips[j]] = "1";
+				} else {
+					location[flips[j]] = "0";
+				}
+			}
+		}
+
+	}
+
 	public String[] getLocation() {
 		String[] retStringArray = new String[location.length];
 		for (int i = 0; i < retStringArray.length; i++) retStringArray[i] = location[i];

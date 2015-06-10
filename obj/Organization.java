@@ -25,7 +25,7 @@ public class Organization {
 	public Organization(int idx) {
 		index = idx;
 		// orgType = "whatever"; set by subclass
-		location = new Location(); // random location to start with
+		location = new Location(); // random location to start with 
 		/**
 		 * units[0] = new Business(location, Globals.kdists[0]);
 		 * searchStatus[0] = -2;    //  DO I NEED THIS?
@@ -35,6 +35,20 @@ public class Organization {
 		 * Debug.println("InfoSys DMU " + idx + " created");
 		*/
 		
+		// no need to make specific for Business/InfoSys -- make general
+		for (int i = 0; i < Globals.numUnits; i++) {
+			//units[i] = new DMU(i, Globals.unitNames[i], location, Globals.kdists[i], Globals.localKnowledgeIndex[i], Globals.knowledgeOverlapIndex[i]);
+			units[i] = new Unit(i, Globals.unitNames[i], location, Globals.domainDistributionsCounts, Globals.localKnowledgeIndices);
+		}
+		/* period = 0; */
+		completed = false;
+		//lastDMU = -2;
+	}
+
+	public Organization(int idx, int[] distances) {
+		index = idx;
+		location = new Location(); // random location to start with 
+		// location = new Location()
 		// no need to make specific for Business/InfoSys -- make general
 		for (int i = 0; i < Globals.numUnits; i++) {
 			//units[i] = new DMU(i, Globals.unitNames[i], location, Globals.kdists[i], Globals.localKnowledgeIndex[i], Globals.knowledgeOverlapIndex[i]);

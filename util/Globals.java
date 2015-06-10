@@ -45,7 +45,7 @@ public class Globals {
 	public static double preferentialWeightage; 
 
 	// distance measures for application and process novelty (Tiwana 2012)
-	public static int[] unitDistance;
+	public static int[] unitDistance; 
 
 	// public static String reportLevel = "summary"; // reportLevel = {summary, details}
 	public static String reportLevel; // reportLevel = {summary, details}
@@ -140,6 +140,7 @@ public class Globals {
 				for (int i =0; i < p.getProperty("unitDistance").split(",").length; i++) {
 					unitDistance[i] = Integer.parseInt(p.getProperty("unitDistance").split(",")[i]);
 				}
+
 
 				// neighborSelection = {random, myknowledge, othersknowledge, cross}
 				// neighborSelectionApproach = (p.getProperty("neighborSelection") == null) ? "random" : p.getProperty("neighborSelection");
